@@ -26,7 +26,7 @@ tesr-attendanceee/
 
 ## ขั้นที่ 1 — สร้าง Google Sheet และหลังบ้าน (Apps Script)
 
-1. เปิด Google Sheet ที่ใช้เก็บข้อมูล: [บทที่ 6 · ชีตระบบเช็คชื่อ](https://docs.google.com/spreadsheets/d/124xa36KzJJ67coHTL0MCgslV6GLwQF1_3rGalSA1r30/edit) (ถ้าใช้ชีตอื่น ให้แก้ `SPREADSHEET_ID` ใน `Code.gs`)
+1. เปิด Google Sheet ที่ใช้เก็บข้อมูล: [สำเนาของ บทที่ 6 · ชีตระบบเช็คชื่อ](https://docs.google.com/spreadsheets/d/1bvk2ZPmi-5VZO95X9CMh7ev7wZiPacoo6Q615G3LPo4/edit) (ถ้าใช้ชีตอื่น ให้แก้ `SPREADSHEET_ID` ใน `Code.gs`)
 2. เมนู **ส่วนขยาย (Extensions) → Apps Script**
 3. ลบโค้ดเดิมในไฟล์ `Code.gs` แล้ววางโค้ดจาก [`apps-script/Code.gs`](apps-script/Code.gs)
 4. แก้บรรทัด `const ADMIN_PIN = '1234';` เป็น **รหัสผู้สอน** ของคุณ → กด 💾 บันทึก

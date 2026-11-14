@@ -2,12 +2,12 @@
  * ระบบเช็คชื่อคลาส Claude AI — ส่วนหลังบ้านบน Google Sheet (Google Apps Script)
  * วิธีติดตั้งดูในไฟล์ README.md
  *
- * ชีตที่ใช้: "บทที่ 6 · ชีตระบบเช็คชื่อ"
- * https://docs.google.com/spreadsheets/d/124xa36KzJJ67coHTL0MCgslV6GLwQF1_3rGalSA1r30/edit
+ * ชีตที่ใช้: "สำเนาของ บทที่ 6 · ชีตระบบเช็คชื่อ"
+ * https://docs.google.com/spreadsheets/d/1bvk2ZPmi-5VZO95X9CMh7ev7wZiPacoo6Q615G3LPo4/edit
  */
 const ADMIN_PIN = '1234';           // ← เปลี่ยนเป็นรหัสผู้สอนของคุณ (ใช้นำเข้า/ลบรายชื่อ, ยกเลิกเช็คชื่อ, ตั้งค่า)
 const TIMEZONE  = 'Asia/Bangkok';
-const SPREADSHEET_ID = '124xa36KzJJ67coHTL0MCgslV6GLwQF1_3rGalSA1r30'; // ชีตที่ใช้เก็บข้อมูล
+const SPREADSHEET_ID = '1bvk2ZPmi-5VZO95X9CMh7ev7wZiPacoo6Q615G3LPo4'; // ชีตที่ใช้เก็บข้อมูล
 
 // แท็บ "Data" = บันทึกการเช็คชื่อแบบอ่านง่าย (timestamp, name, note) ทุกครั้งที่มีคนกดยืนยันเข้าเรียน
 const LOG_SHEET = 'Data';
