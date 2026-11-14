@@ -2,81 +2,105 @@
  * ระบบเช็คชื่อคลาส Claude AI — ส่วนหลังบ้านบน Google Sheet (Google Apps Script)
  * วิธีติดตั้งดูในไฟล์ README.md
  *
- * ชีตที่ใช้: "สำเนาของ บทที่ 6 · ชีตระบบเช็คชื่อ"
- * https://docs.google.com/spreadsheets/d/1bvk2ZPmi-5VZO95X9CMh7ev7wZiPacoo6Q615G3LPo4/edit
+ * ชีตที่ใช้: "สำเนาของ บทที่ 6 · เฉลยสำหรับผู้สอน (ชีต + Apps Script)"
+ * https://docs.google.com/spreadsheets/d/1n9Tr5oyydEUM3tEOpJuJFrPFQ1Ka31T6dDMJ_qv9weY/edit
+ *
+ * แท็บในชีต
+ *   Roster     — รายชื่อผู้เรียน: id, ชื่อ-นามสกุล, หน่วยงาน, ชื่อภาษาอังกฤษ
+ *   Attendance — การเช็คชื่อแบบละเอียด (เวลา สถานะ ลายเซ็น)
+ *   Data       — บันทึกแบบอ่านง่าย: timestamp, name, note (มา / สาย)
+ *   Settings   — title, start (เวลาเริ่มเรียน), grace (นาทีที่ยังไม่นับสาย)
  */
 const ADMIN_PIN = '1234';           // ← เปลี่ยนเป็นรหัสผู้สอนของคุณ (ใช้นำเข้า/ลบรายชื่อ, ยกเลิกเช็คชื่อ, ตั้งค่า)
 const TIMEZONE  = 'Asia/Bangkok';
-const SPREADSHEET_ID = '1bvk2ZPmi-5VZO95X9CMh7ev7wZiPacoo6Q615G3LPo4'; // ชีตที่ใช้เก็บข้อมูล
-
-// แท็บ "Data" = บันทึกการเช็คชื่อแบบอ่านง่าย (timestamp, name, note) ทุกครั้งที่มีคนกดยืนยันเข้าเรียน
-const LOG_SHEET = 'Data';
-const LOG_COLS  = ['timestamp', 'name', 'note'];
+const SPREADSHEET_ID = '1n9Tr5oyydEUM3tEOpJuJFrPFQ1Ka31T6dDMJ_qv9weY';
 const LOG_TIME_FORMAT = 'dd/MM/yyyy HH:mm';
 
-// แท็บที่หน้าเว็บใช้ทำงาน (สร้างให้อัตโนมัติ)
+// ชื่อแท็บ + หัวคอลัมน์ในชีต (ซ้าย) ↔ ชื่อฟิลด์ที่หน้าเว็บใช้ (ขวา)
 const SHEETS = {
-  students: { name: 'รายชื่อ',  cols: ['id', 'code', 'name', 'org', 'nickname', 'email', 'order', 'updatedAt'] },
-  checkins: { name: 'เช็คชื่อ', cols: ['date', 'studentId', 'code', 'name', 'org', 'timeText', 'status', 'lateMinutes', 'time', 'signature', 'createdAt'] },
-  config:   { name: 'ตั้งค่า',   cols: ['key', 'value'] },
+  roster: {
+    name: 'Roster',
+    cols: [['id', 'id'], ['ชื่อ-นามสกุล', 'name'], ['หน่วยงาน', 'org'], ['ชื่อภาษาอังกฤษ', 'nickname']],
+  },
+  attendance: {
+    name: 'Attendance',
+    cols: [['วันที่', 'date'], ['id', 'studentId'], ['ชื่อ-นามสกุล', 'name'], ['หน่วยงาน', 'org'],
+           ['เวลาเช็คอิน', 'timeText'], ['สถานะ', 'status'], ['สาย (นาที)', 'lateMinutes'],
+           ['บันทึกเมื่อ (ISO)', 'iso'], ['ลิงก์ลายเซ็น', 'sigLink'], ['ลายเซ็น (ข้อมูลภาพ)', 'sig']],
+  },
+  log: {
+    name: 'Data',
+    cols: [['timestamp', 'timestamp'], ['name', 'name'], ['note', 'note']],
+  },
+  settings: {
+    name: 'Settings',
+    cols: [['key', 'key'], ['value', 'value']],
+  },
 };
+// key ในแท็บ Settings ↔ ฟิลด์ที่หน้าเว็บใช้
+const SETTING_KEYS = { title: 'title', start: 'startTime', grace: 'grace' };
 
+/* ---------------- ตัวช่วยอ่าน/เขียนชีต ---------------- */
 function ss_() {
   try { return SpreadsheetApp.openById(SPREADSHEET_ID); }
   catch (e) { return SpreadsheetApp.getActive(); }
 }
 
 function sheet_(key) {
-  const ss = ss_();
   const def = SHEETS[key];
+  const ss = ss_();
   let sh = ss.getSheetByName(def.name);
   if (!sh) {
     sh = ss.insertSheet(def.name);
-    sh.getRange(1, 1, 1, def.cols.length).setValues([def.cols]).setFontWeight('bold').setBackground('#d1fae5');
-    sh.setFrozenRows(1);
-    sh.getRange(2, 1, sh.getMaxRows() - 1, def.cols.length).setNumberFormat('@'); // เก็บเป็นข้อความ ไม่ให้แปลงวันที่/เวลาเอง
-  }
-  return sh;
-}
-
-function logSheet_() {
-  const ss = ss_();
-  let sh = ss.getSheetByName(LOG_SHEET);
-  if (!sh) {
-    sh = ss.insertSheet(LOG_SHEET, 0);
-    sh.getRange(1, 1, 1, LOG_COLS.length).setValues([LOG_COLS]).setFontWeight('bold');
+    sh.getRange(1, 1, 1, def.cols.length).setValues([def.cols.map(c => c[0])]).setFontWeight('bold');
     sh.setFrozenRows(1);
   }
   return sh;
 }
 
+/** อ่านทุกแถวเป็น object ตามชื่อฟิลด์ของเว็บ (อ้างหัวคอลัมน์จริงในชีต จึงสลับลำดับคอลัมน์ได้) */
 function rows_(key) {
-  const sh = sheet_(key);
-  const values = sh.getDataRange().getValues();
-  const head = values.shift() || [];
+  const def = SHEETS[key];
+  const values = sheet_(key).getDataRange().getValues();
+  const head = (values.shift() || []).map(h => String(h).trim());
+  const idx = def.cols.map(([h, f]) => [f, head.indexOf(h)]);
   return values.map((r, i) => {
     const o = { _row: i + 2 };
-    head.forEach((c, j) => { o[c] = r[j]; });
+    idx.forEach(([f, j]) => { o[f] = j >= 0 ? r[j] : ''; });
     return o;
   });
 }
 
-function dateKey_(v) {
-  if (v instanceof Date) return Utilities.formatDate(v, TIMEZONE, 'yyyy-MM-dd');
-  return String(v || '').slice(0, 10);
-}
-
-function json_(o) {
-  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
-}
-
-function upsert_(key, keyCol, keyVal, obj) {
+/** เรียงค่าให้ตรงกับหัวคอลัมน์จริงของชีต */
+function line_(key, obj) {
+  const def = SHEETS[key];
   const sh = sheet_(key);
-  const cols = SHEETS[key].cols;
-  const found = rows_(key).find(r => String(r[keyCol]) === String(keyVal));
-  const line = cols.map(c => (obj[c] === undefined || obj[c] === null) ? '' : obj[c]);
-  if (found) sh.getRange(found._row, 1, 1, cols.length).setValues([line]);
-  else sh.appendRow(line);
+  const head = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getValues()[0].map(h => String(h).trim());
+  const map = {};
+  def.cols.forEach(([h, f]) => { map[h] = f; });
+  return head.map(h => {
+    const f = map[h];
+    const v = f ? obj[f] : '';
+    return (v === undefined || v === null) ? '' : v;
+  });
+}
+
+function writeRow_(key, row, obj) {
+  const sh = sheet_(key);
+  const line = line_(key, obj);
+  const rg = sh.getRange(row, 1, 1, line.length);
+  rg.setNumberFormat('@');          // เก็บเป็นข้อความ ไม่ให้ชีตแปลงวันที่/เวลาเอง
+  rg.setValues([line.map(v => typeof v === 'number' ? String(v) : v)]);
+}
+
+function append_(key, obj) {
+  writeRow_(key, sheet_(key).getLastRow() + 1, obj);
+}
+
+function upsert_(key, field, val, obj) {
+  const found = rows_(key).find(r => String(r[field]).trim() === String(val).trim());
+  if (found) writeRow_(key, found._row, obj);
+  else append_(key, obj);
 }
 
 function deleteWhere_(key, test) {
@@ -84,46 +108,61 @@ function deleteWhere_(key, test) {
   rows_(key).filter(test).map(r => r._row).sort((a, b) => b - a).forEach(n => sh.deleteRow(n));
 }
 
-/** เขียนแถวลงแท็บ Data: timestamp, name, note (มา / สาย) */
+function dateKey_(v) {
+  if (v instanceof Date) return Utilities.formatDate(v, TIMEZONE, 'yyyy-MM-dd');
+  const s = String(v || '').trim();
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s);           // รองรับ dd/MM/yyyy ด้วย
+  if (m) return m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2);
+  return s.slice(0, 10);
+}
+
+function hm_(v) {
+  if (v instanceof Date) return Utilities.formatDate(v, TIMEZONE, 'HH:mm');
+  return String(v || '').slice(0, 5);
+}
+
+function json_(o) {
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ---------------- แท็บ Data ---------------- */
 function appendLog_(d) {
-  const sh = logSheet_();
   const ms = Number(d.time) || Date.now();
-  const ts = Utilities.formatDate(new Date(ms), TIMEZONE, LOG_TIME_FORMAT);
-  const note = (d.status === 'มาสาย' || Number(d.lateMinutes) > 0) ? 'สาย' : 'มา';
-  const row = sh.getLastRow() + 1;
-  sh.getRange(row, 1).setNumberFormat('@');   // เก็บเวลาเป็นข้อความรูปแบบเดียวกับแถวเดิม
-  sh.getRange(row, 1, 1, 3).setValues([[ts, String(d.name || ''), note]]);
+  append_('log', {
+    timestamp: Utilities.formatDate(new Date(ms), TIMEZONE, LOG_TIME_FORMAT),
+    name: String(d.name || ''),
+    note: (d.status === 'มาสาย' || Number(d.lateMinutes) > 0) ? 'สาย' : 'มา',
+  });
 }
 
-/** ลบแถวในแท็บ Data เมื่อผู้สอนยกเลิกการเช็คชื่อ (จับคู่ชื่อ + วันที่) */
-function removeLog_(dateKey, name) {
-  const sh = logSheet_();
-  const want = Utilities.formatDate(new Date(dateKey + 'T12:00:00+07:00'), TIMEZONE, 'dd/MM/yyyy');
-  const values = sh.getDataRange().getValues();
-  for (let i = values.length - 1; i >= 1; i--) {
-    const t = values[i][0];
-    const day = t instanceof Date ? Utilities.formatDate(t, TIMEZONE, 'dd/MM/yyyy') : String(t).slice(0, 10);
-    if (day === want && String(values[i][1]).trim() === String(name).trim()) sh.deleteRow(i + 1);
-  }
+function removeLog_(date, name) {
+  deleteWhere_('log', r => dateKey_(r.timestamp) === date && String(r.name).trim() === String(name).trim());
 }
 
+/* ---------------- API ที่หน้าเว็บเรียก ---------------- */
 /** อ่านข้อมูลทั้งหมดของวันที่ระบุ */
 function doGet(e) {
   const date = dateKey_((e && e.parameter && e.parameter.date) || '');
-  const students = rows_('students').filter(r => r.id).map(r => ({
-    id: String(r.id), code: String(r.code || ''), name: String(r.name || ''), org: String(r.org || ''),
-    nickname: String(r.nickname || ''), email: String(r.email || ''), order: Number(r.order) || 0,
+  const students = rows_('roster').filter(r => String(r.id).trim() && String(r.name).trim()).map(r => ({
+    id: String(r.id).trim(), code: '', name: String(r.name).trim(), org: String(r.org || ''),
+    nickname: String(r.nickname || ''), email: '', order: r._row,
   }));
   const checkins = {};
-  rows_('checkins').forEach(r => {
-    if (dateKey_(r.date) !== date || !r.studentId) return;
-    checkins[String(r.studentId)] = {
-      studentId: String(r.studentId), name: String(r.name || ''), code: String(r.code || ''),
-      time: Number(r.time), sig: String(r.signature || ''),
+  rows_('attendance').forEach(r => {
+    if (dateKey_(r.date) !== date || !String(r.studentId).trim()) return;
+    let time = Date.parse(String(r.iso || ''));
+    if (isNaN(time)) time = Date.parse(date + 'T' + (hm_(r.timeText) || '00:00') + ':00+07:00');
+    checkins[String(r.studentId).trim()] = {
+      studentId: String(r.studentId).trim(), name: String(r.name || ''), code: '',
+      time: time, sig: String(r.sig || ''),
     };
   });
   const config = {};
-  rows_('config').forEach(r => { if (r.key) config[r.key] = r.key === 'grace' ? Number(r.value) : String(r.value); });
+  rows_('settings').forEach(r => {
+    const f = SETTING_KEYS[String(r.key).trim()];
+    if (!f) return;
+    config[f] = f === 'grace' ? Number(r.value) : (f === 'startTime' ? hm_(r.value) : String(r.value));
+  });
   return json_({ ok: true, students, checkins, config });
 }
 
@@ -141,35 +180,46 @@ function doPost(e) {
       case 'verify':
         return json_({ ok: true });
       case 'putStudent':
-        upsert_('students', 'id', b.id, Object.assign({}, b.data, { id: b.id }));
+        upsert_('roster', 'id', b.id, Object.assign({}, b.data, { id: b.id }));
         return json_({ ok: true });
       case 'putStudents':
-        (b.items || []).forEach(it => upsert_('students', 'id', it.id, Object.assign({}, it.data, { id: it.id })));
+        (b.items || []).forEach(it => upsert_('roster', 'id', it.id, Object.assign({}, it.data, { id: it.id })));
         return json_({ ok: true });
       case 'delStudent':
-        deleteWhere_('students', r => String(r.id) === String(b.id));
+        deleteWhere_('roster', r => String(r.id).trim() === String(b.id));
         return json_({ ok: true });
       case 'checkin': {
         const date = dateKey_(b.date);
-        if (rows_('checkins').some(r => dateKey_(r.date) === date && String(r.studentId) === String(b.id)))
+        if (rows_('attendance').some(r => dateKey_(r.date) === date && String(r.studentId).trim() === String(b.id)))
           return json_({ ok: false, error: 'exists' });
         const d = b.data || {};
-        const line = SHEETS.checkins.cols.map(c =>
-          c === 'date' ? date : c === 'studentId' ? b.id : c === 'signature' ? (d.sig || '') : (d[c] === undefined || d[c] === null ? '' : d[c]));
-        sheet_('checkins').appendRow(line);
-        appendLog_(d);
+        const ms = Number(d.time) || Date.now();
+        append_('attendance', {
+          date: date, studentId: b.id, name: d.name || '', org: d.org || '',
+          timeText: d.timeText || Utilities.formatDate(new Date(ms), TIMEZONE, 'HH:mm'),
+          status: d.status || '', lateMinutes: Number(d.lateMinutes) || 0,
+          iso: new Date(ms).toISOString(), sigLink: '', sig: d.sig || '',
+        });
+        appendLog_(Object.assign({}, d, { time: ms }));
         return json_({ ok: true });
       }
       case 'delCheckin': {
         const date = dateKey_(b.date);
-        const gone = rows_('checkins').filter(r => dateKey_(r.date) === date && String(r.studentId) === String(b.id));
-        deleteWhere_('checkins', r => dateKey_(r.date) === date && String(r.studentId) === String(b.id));
+        const test = r => dateKey_(r.date) === date && String(r.studentId).trim() === String(b.id);
+        const gone = rows_('attendance').filter(test);
+        deleteWhere_('attendance', test);
         gone.forEach(r => removeLog_(date, r.name));
         return json_({ ok: true });
       }
-      case 'putConfig':
-        Object.keys(b.data || {}).forEach(k => upsert_('config', 'key', k, { key: k, value: b.data[k] }));
+      case 'putConfig': {
+        const rev = {};
+        Object.keys(SETTING_KEYS).forEach(k => { rev[SETTING_KEYS[k]] = k; });
+        Object.keys(b.data || {}).forEach(f => {
+          const k = rev[f];
+          if (k) upsert_('settings', 'key', k, { key: k, value: b.data[f] });
+        });
         return json_({ ok: true });
+      }
     }
     return json_({ ok: false, error: 'unknown_action' });
   } catch (err) {
@@ -179,9 +229,8 @@ function doPost(e) {
   }
 }
 
-/** กด Run ฟังก์ชันนี้ครั้งแรกเพื่อสร้างแท็บและอนุญาตสิทธิ์ */
+/** กด Run ฟังก์ชันนี้ครั้งแรกเพื่อตรวจแท็บและอนุญาตสิทธิ์ */
 function setup() {
-  logSheet_();
   Object.keys(SHEETS).forEach(sheet_);
 }
 

@@ -26,13 +26,13 @@ tesr-attendanceee/
 
 ## ขั้นที่ 1 — สร้าง Google Sheet และหลังบ้าน (Apps Script)
 
-1. เปิด Google Sheet ที่ใช้เก็บข้อมูล: [สำเนาของ บทที่ 6 · ชีตระบบเช็คชื่อ](https://docs.google.com/spreadsheets/d/1bvk2ZPmi-5VZO95X9CMh7ev7wZiPacoo6Q615G3LPo4/edit) (ถ้าใช้ชีตอื่น ให้แก้ `SPREADSHEET_ID` ใน `Code.gs`)
+1. เปิด Google Sheet ที่ใช้เก็บข้อมูล: [สำเนาของ บทที่ 6 · เฉลยสำหรับผู้สอน (ชีต + Apps Script)](https://docs.google.com/spreadsheets/d/1n9Tr5oyydEUM3tEOpJuJFrPFQ1Ka31T6dDMJ_qv9weY/edit) (ถ้าใช้ชีตอื่น ให้แก้ `SPREADSHEET_ID` ใน `Code.gs`)
 2. เมนู **ส่วนขยาย (Extensions) → Apps Script**
 3. ลบโค้ดเดิมในไฟล์ `Code.gs` แล้ววางโค้ดจาก [`apps-script/Code.gs`](apps-script/Code.gs)
 4. แก้บรรทัด `const ADMIN_PIN = '1234';` เป็น **รหัสผู้สอน** ของคุณ → กด 💾 บันทึก
 5. เลือกฟังก์ชัน **`setup`** ด้านบน แล้วกด **Run**
    ครั้งแรก Google จะขออนุญาต → เลือกบัญชี → *Advanced* → *Go to project* → *Allow*
-   ระบบจะใช้แท็บ `Data` ที่มีอยู่ และสร้างเพิ่ม 3 แท็บ: `รายชื่อ` · `เช็คชื่อ` · `ตั้งค่า`
+   ระบบใช้แท็บที่มีอยู่ในชีต: `Roster` · `Attendance` · `Data` · `Settings` (ถ้าแท็บไหนหายไปจะสร้างให้ใหม่)
 6. กด **Deploy → New deployment** → คลิก ⚙️ เลือก **Web app**
    - **Execute as:** Me
    - **Who has access:** Anyone
@@ -76,10 +76,10 @@ window.ATTENDANCE_CONFIG = {
 
 | แท็บ | คอลัมน์ |
 | --- | --- |
+| `Roster` | id, ชื่อ-นามสกุล, หน่วยงาน, ชื่อภาษาอังกฤษ — รายชื่อที่แสดงบนเว็บ (แก้ตรงนี้ได้เลย) |
+| `Attendance` | **วันที่**, id, **ชื่อ-นามสกุล**, หน่วยงาน, **เวลาเช็คอิน**, **สถานะ** (มาเรียน/มาสาย), **สาย (นาที)**, บันทึกเมื่อ (ISO), ลิงก์ลายเซ็น, ลายเซ็น (ข้อมูลภาพ) |
 | `Data` | **timestamp** (วว/ดด/ปปปป ชช:นน), **name**, **note** (มา / สาย) — เพิ่มแถวทุกครั้งที่มีคนกดยืนยันเข้าเรียน |
-| `รายชื่อ` | id, code, name, org, nickname, email, order, updatedAt |
-| `เช็คชื่อ` | **date**, studentId, code, **name**, org, **timeText** (เวลาที่มา), **status** (มาเรียน/มาสาย), **lateMinutes**, time, **signature**, createdAt |
-| `ตั้งค่า` | startTime (เวลาเริ่มเรียน), grace (นาทีที่ยังไม่นับสาย) |
+| `Settings` | title, start (เวลาเริ่มเรียน), grace (นาทีที่ยังไม่นับสาย) |
 
 - ลายเซ็นเก็บเป็นรหัสรูปภาพ (`data:image/...`) ดูรูปได้ในเว็บ: กดที่ชื่อคนที่เช็คชื่อแล้ว
 - หน้าเว็บดึงข้อมูลใหม่ทุก 8 วินาที ทุกเครื่องจึงเห็นตรงกัน
