@@ -1,0 +1,5 @@
+private/
+*.private.csv
+.DS_Store
+Thumbs.db
+.clasp.json
