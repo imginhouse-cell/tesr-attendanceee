@@ -355,9 +355,10 @@ a{color:#6d4fd0!important}
 const SHEET_API_URL=String((window.ATTENDANCE_CONFIG&&window.ATTENDANCE_CONFIG.SHEET_API_URL)||'').trim();
 const TZ='Asia/Bangkok';
 /* ===== เวอร์ชันของเว็บ: อัปเดตทุกครั้งที่ปล่อยของใหม่ (ดู CHANGELOG.md) ===== */
-const APP_VERSION='1.4.0';
+const APP_VERSION='1.5.0';
 const APP_UPDATED='2026-11-14';
 const CHANGELOG=[
+  {v:'1.5.0',d:'2026-11-14',items:['เชื่อมกับ Google Sheet ของคลาส: รายชื่อจากแท็บ Roster ตั้งค่าจากแท็บ Settings','ทุกครั้งที่เช็คชื่อ บันทึกลงแท็บ Attendance และแท็บ Data (timestamp / name / note)','ค้นหาด้วยชื่อภาษาอังกฤษได้']},
   {v:'1.4.0',d:'2026-11-14',items:['แสดงเลขเวอร์ชันบนเว็บ กดดูประวัติการอัปเดตได้','จัดไฟล์พร้อมขึ้น GitHub Pages']},
   {v:'1.3.0',d:'2026-11-14',items:['เพิ่มฮีโร่สายรุ้งประจำคลาส ทั้งส่วนหัวเว็บและหน้าเช็คชื่อสำเร็จ']},
   {v:'1.2.0',d:'2026-11-14',items:['เปลี่ยนเป็นธีมพาสเทลสายรุ้ง','แก้ข้อความแจ้งเตือนผิดหลังกดยืนยันเข้าเรียน']},
@@ -615,7 +616,7 @@ function render(){
     if(state.filter==='wait'&&st!=='wait')return false;
     if(state.filter==='done'&&st==='wait')return false;
     if(state.filter==='late'&&st!=='late')return false;
-    if(q&&!(`${s.name} ${s.code||''} ${s.nickname||''} ${s.org||''}`.toLowerCase().includes(q)))return false;
+    if(q&&!(`${s.name} ${s.code||''} ${s.nickname||''} ${s.org||''} ${s.en||''}`.toLowerCase().includes(q)))return false;
     return true;
   });
   $('#listCount').textContent=`แสดง ${rows.length} จาก ${total} คน`;
@@ -1036,7 +1037,7 @@ $('#seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
 $('#date').addEventListener('change',e=>{if(e.target.value)setDate(e.target.value)});
 $('#bImport').onclick=openImport;
 $('#bLogin').onclick=()=>{
-  openModal(`${head('','เข้าสู่โหมดผู้สอน','ใช้รหัส ADMIN_PIN ที่ตั้งไว้ใน Google Apps Script')}<div class="sh-body"><div class="field"><label>รหัสผู้สอน</label><input id="pinIn" type="password" inputmode="numeric" autocomplete="current-password"></div><div class="actions"><button class="btn" data-close>ยกเลิก</button><button class="btn primary" id="pinOk">เข้าสู่ระบบ</button></div></div>`);
+  openModal(`${head('','เข้าสู่โหมดผู้สอน','ใช้รหัส ADMIN_PIN ที่ตั้งไว้ใน Code.gs ของ Apps Script')}<div class="sh-body"><div class="field"><label>รหัสผู้สอน</label><input id="pinIn" type="password" inputmode="numeric" autocomplete="current-password"></div><div class="actions"><button class="btn" data-close>ยกเลิก</button><button class="btn primary" id="pinOk">เข้าสู่ระบบ</button></div></div>`);
   const go=async()=>{const p=$('#pinIn').value.trim();if(!p)return;
     try{const j=await store.verify(p);if(j&&j.ok){try{sessionStorage.setItem('attn-pin',p)}catch(e){}state._pin=p;state.isAdmin=true;closeModal();render();toast('เข้าสู่โหมดผู้สอนแล้ว')}else toast('รหัสไม่ถูกต้อง',true)}catch(e){toast('เชื่อมต่อไม่ได้',true)}};
   $('#pinOk').onclick=go;$('#pinIn').onkeydown=e=>{if(e.key==='Enter')go()};setTimeout(()=>$('#pinIn').focus(),50);

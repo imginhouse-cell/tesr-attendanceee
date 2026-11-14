@@ -1,6 +1,6 @@
 # เว็บเช็คชื่อคลาส Claude AI ✅
 
-**เวอร์ชันปัจจุบัน: v1.4.0** · [ประวัติการอัปเดต](CHANGELOG.md) · เว็บ: https://imginhouse-cell.github.io/tesr-attendanceee/
+**เวอร์ชันปัจจุบัน: v1.5.0** · [ประวัติการอัปเดต](CHANGELOG.md) · เว็บ: https://imginhouse-cell.github.io/tesr-attendanceee/
 
 เว็บเช็คชื่อเข้าเรียนออนไลน์ ใช้ได้ทั้งมือถือ แท็บเล็ต และคอมพิวเตอร์
 ผู้เรียนแตะชื่อตัวเอง → เซ็นลายเซ็น → กด **ยืนยันเข้าเรียน (Approve)**
