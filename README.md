@@ -26,13 +26,13 @@ tesr-attendanceee/
 
 ## ขั้นที่ 1 — สร้าง Google Sheet และหลังบ้าน (Apps Script)
 
-1. สร้าง Google Sheet ใหม่ ตั้งชื่อเช่น `เช็คชื่อคลาส Claude AI`
+1. เปิด Google Sheet ที่ใช้เก็บข้อมูล: [บทที่ 6 · ชีตระบบเช็คชื่อ](https://docs.google.com/spreadsheets/d/124xa36KzJJ67coHTL0MCgslV6GLwQF1_3rGalSA1r30/edit) (ถ้าใช้ชีตอื่น ให้แก้ `SPREADSHEET_ID` ใน `Code.gs`)
 2. เมนู **ส่วนขยาย (Extensions) → Apps Script**
 3. ลบโค้ดเดิมในไฟล์ `Code.gs` แล้ววางโค้ดจาก [`apps-script/Code.gs`](apps-script/Code.gs)
 4. แก้บรรทัด `const ADMIN_PIN = '1234';` เป็น **รหัสผู้สอน** ของคุณ → กด 💾 บันทึก
 5. เลือกฟังก์ชัน **`setup`** ด้านบน แล้วกด **Run**
    ครั้งแรก Google จะขออนุญาต → เลือกบัญชี → *Advanced* → *Go to project* → *Allow*
-   ระบบจะสร้าง 3 แท็บ: `รายชื่อ` · `เช็คชื่อ` · `ตั้งค่า`
+   ระบบจะใช้แท็บ `Data` ที่มีอยู่ และสร้างเพิ่ม 3 แท็บ: `รายชื่อ` · `เช็คชื่อ` · `ตั้งค่า`
 6. กด **Deploy → New deployment** → คลิก ⚙️ เลือก **Web app**
    - **Execute as:** Me
    - **Who has access:** Anyone
@@ -76,6 +76,7 @@ window.ATTENDANCE_CONFIG = {
 
 | แท็บ | คอลัมน์ |
 | --- | --- |
+| `Data` | **timestamp** (วว/ดด/ปปปป ชช:นน), **name**, **note** (มา / สาย) — เพิ่มแถวทุกครั้งที่มีคนกดยืนยันเข้าเรียน |
 | `รายชื่อ` | id, code, name, org, nickname, email, order, updatedAt |
 | `เช็คชื่อ` | **date**, studentId, code, **name**, org, **timeText** (เวลาที่มา), **status** (มาเรียน/มาสาย), **lateMinutes**, time, **signature**, createdAt |
 | `ตั้งค่า` | startTime (เวลาเริ่มเรียน), grace (นาทีที่ยังไม่นับสาย) |
