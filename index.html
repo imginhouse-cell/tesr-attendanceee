@@ -2,566 +2,1052 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f3fcf6">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>เช็คชื่อคลาส Claude AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 <style>
-/* VOICE: bright, minimal, friendly front desk of a class; quick for anyone on any device
-   IDEA: a fresh sign-in sheet on a clipboard: find your name, sign with a pen, time is stamped
-   PICTURE: big search field and the live roster cards; signatures appear as little ink thumbnails
-   COLOUR and TYPE: white and soft mint, fresh leaf green for actions, amber only for late; Anuphan
-   LAYOUT: light hero (title, clock + ring, big search, 3 steps) > filter bar > card grid; one column on phones */
-:root{color-scheme:light;
---bg:#f7fcf9;--card:#fff;--ink:#173a2a;--mut:#6a8478;--line:#e2f1e8;--mint:#eaf8f0;--mint2:#d6f3e2;
---g:#17a957;--gd:#0d7a3e;--on:#fff;--lime:#e4f9b8;--amber:#a86200;--amberbg:#fff3db;--red:#cf4338;
---sh:0 1px 2px rgb(20 90 50/.05),0 12px 32px -16px rgb(20 90 50/.22);--r:20px}
-*{box-sizing:border-box;min-width:0}
-html{-webkit-text-size-adjust:100%}*{-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Anuphan,"Noto Sans Thai",system-ui,sans-serif;overflow-x:clip}
-body.lock{overflow:hidden}
-button,input,textarea{font:inherit;color:inherit}
-svg{flex:none}
-.hero{position:relative;overflow:hidden;background:radial-gradient(760px 380px at 92% -12%,#c8f2d7 0%,transparent 62%),radial-gradient(520px 300px at -6% 108%,var(--lime) 0%,transparent 62%),linear-gradient(180deg,#f2fcf6,#fff)}
-.blob{position:absolute;border-radius:50%;pointer-events:none;opacity:.7}
-.b1{width:180px;height:180px;right:6%;bottom:-90px;background:#dff7e9}.b2{width:70px;height:70px;left:46%;top:18px;background:#eefbd6}.b3{width:16px;height:16px;left:38%;top:62%;background:#bfeacf}
-.hin{position:relative;max-width:1240px;margin:auto;padding:calc(clamp(22px,3.6vw,44px) + env(safe-area-inset-top)) max(5vw,16px) clamp(22px,3vw,34px)}
-.top{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:20px;align-items:center}
-.mascot{width:clamp(150px,17vw,200px);animation:bob 3.2s ease-in-out infinite}.mascot svg{display:block;width:100%;height:auto}
-@keyframes bob{50%{transform:translateY(-6px)}}
-.mini{display:block;margin:0 auto}
-.kick{display:inline-flex;gap:8px;align-items:center;font-size:14px;font-weight:600;color:var(--gd);background:#fff;border:1px solid var(--line);padding:5px 12px 5px 6px;border-radius:99px;box-shadow:var(--sh)}
-.kick i{width:22px;height:22px;border-radius:50%;background:var(--g);display:grid;place-items:center}.kick i svg{width:13px;height:13px;color:#fff}
-h1{margin:0 0 6px;font-size:clamp(34px,5.4vw,52px);line-height:1.05;font-weight:700;text-wrap:balance;color:var(--ink)}
-h1 span{color:var(--g)}
-.dl{margin:0;color:var(--mut);font-size:17px}
-.live{display:flex;gap:20px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:24px;padding:16px 20px;box-shadow:var(--sh)}
-.clk{font-size:clamp(30px,4.4vw,46px);font-weight:600;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
-.sync{display:flex;align-items:center;gap:6px;font-size:13px;margin-top:8px;color:var(--mut);white-space:nowrap}
-.sync i{width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 0 3px var(--mint2)}
-.sync[data-s=wait] i,.sync[data-s=slow] i{background:#f0b429;box-shadow:0 0 0 3px #fdf0cf}.sync[data-s=err] i{background:var(--red);box-shadow:0 0 0 3px #fbe0dd}
-.ringw{position:relative;width:104px;height:104px}.ringw svg{width:100%;height:100%}
-#arc{transition:stroke-dashoffset .6s ease}
-.rt{position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1.1}
-.rt b{font-size:28px;font-variant-numeric:tabular-nums;color:var(--gd)}.rt span{font-size:12px;color:var(--mut)}
-.find{margin-top:clamp(18px,2.6vw,28px);position:relative}
-.find input{width:100%;height:60px;border:2px solid var(--line);border-radius:20px;background:#fff;padding:0 56px 0 54px;font-size:18px;outline:none;box-shadow:var(--sh);transition:border-color .15s}
-.find input:focus{border-color:var(--g)}
-.find input::placeholder{color:#93aa9e}
-.find input::-webkit-search-cancel-button{display:none}
-.find>svg{position:absolute;left:18px;top:19px;width:22px;height:22px;color:var(--g)}
-.clr{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:50%;border:0;background:var(--mint);color:var(--gd);cursor:pointer;display:grid;place-items:center}
-.clr svg{width:18px;height:18px}
-.kbd{position:absolute;right:16px;top:17px;font-size:13px;color:var(--mut);border:1px solid var(--line);border-radius:7px;padding:1px 8px;background:var(--bg)}
-.steps{display:flex;flex-wrap:wrap;gap:8px 18px;margin:14px 2px 0;color:var(--mut);font-size:15px}
-.steps span{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
-.steps b{width:24px;height:24px;border-radius:50%;background:var(--mint2);color:var(--gd);display:grid;place-items:center;font-size:13px}
-.qinfo{margin:10px 2px 0;font-weight:600;color:var(--gd)}
-.wrap{max-width:1240px;margin:auto;padding:0 max(5vw,16px)}
-.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:6px}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{height:40px;border-radius:99px;border:1px solid var(--line);background:#fff;padding:0 14px;cursor:pointer;font-weight:500;white-space:nowrap;color:var(--ink)}
-.chip b{font-variant-numeric:tabular-nums;margin-left:5px;color:var(--gd)}
-.chip[aria-pressed=true]{background:var(--g);border-color:transparent;color:#fff}.chip[aria-pressed=true] b{color:#fff}
-.btn{height:44px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:#fff;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;color:var(--ink)}
-.btn:hover{border-color:#a9dcbd;background:#fbfffc}.btn svg{width:18px;height:18px;color:var(--g)}
-.btn.pri{background:var(--g);color:#fff;border-color:transparent}.btn.pri svg{color:#fff}.btn.pri:hover{background:#139a4e}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.dz{color:var(--red)}
-.tools{display:flex;gap:8px;flex-wrap:wrap}
-input[type=date],.fld input,textarea{height:44px;border:1px solid var(--line);border-radius:14px;background:#fff;padding:0 12px;font-size:16px;outline:none}
-.fld input,textarea{width:100%}textarea{height:auto;padding:10px 14px;resize:vertical}
-input:focus-visible,textarea:focus-visible,button:focus-visible,.p:focus-visible,label.drop:focus-within{outline:3px solid rgb(23 169 87/.35);outline-offset:2px}
-.note{margin:14px 2px 0;font-size:14px;color:var(--mut)}
-.list{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
-.p{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
-.p:hover{transform:translateY(-2px);box-shadow:var(--sh);border-color:#bfe6cf}
-.p.ok{background:linear-gradient(120deg,#effbf4,#fff 72%);border-color:#c9ecd7}
-.p.one{border-color:var(--g);box-shadow:0 0 0 4px rgb(23 169 87/.14),var(--sh)}
-.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:18px;flex:none}
-.av svg{width:22px;height:22px}
-.p.ok .av{background:var(--g)!important;color:#fff!important}
-.who{display:grid}.nm{font-weight:600;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nm mark,.sub mark{background:var(--lime);color:inherit;border-radius:4px;padding:0 1px}
-.sub{color:var(--mut);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0}
-.tm{text-align:right;display:grid;justify-items:end;gap:3px}
-.tm b{font-size:20px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
-.thumb{height:26px;max-width:84px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;padding:1px 4px}
-.tag{display:inline-block;font-size:13px;padding:2px 10px;border-radius:99px;background:var(--mint);color:var(--gd);font-weight:600;white-space:nowrap}
-.tag.late{background:var(--amberbg);color:var(--amber)}
-.go{height:42px;padding:0 14px 0 12px;border-radius:99px;background:var(--g);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 6px 14px -8px rgb(23 169 87/.8)}
-.go svg{width:17px;height:17px}
-.empty{text-align:center;padding:44px 16px;border:2px dashed var(--line);border-radius:24px;margin-top:16px;background:#fff}
-.nomatch{text-align:center;padding:28px 16px;color:var(--mut)}.nomatch p{margin:8px 0 0}.empty h2{margin:12px 0 4px;font-size:22px}.empty .tools{justify-content:center;margin-top:16px}
-main{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
-.ov{position:fixed;inset:0;background:rgb(23 58 42/.28);backdrop-filter:blur(3px);display:none;place-items:center;padding:16px;z-index:20}
-.ov.on{display:grid}
-.md{background:#fff;border-radius:26px;width:min(580px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:22px;box-shadow:0 30px 80px -24px rgb(20 70 40/.35);animation:pop .22s ease-out}
-@keyframes pop{from{transform:translateY(14px) scale(.98);opacity:0}}
-.md h2{margin:0;font-size:22px;line-height:1.2}
-.mh{display:flex;gap:14px;align-items:center;margin-bottom:14px}
-.av.lg{width:56px;height:56px;font-size:22px}
-.when{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--mint);border-radius:16px;padding:10px 14px;margin-bottom:12px}
-.when b{display:block;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
-.padlbl{display:flex;justify-content:space-between;align-items:center;font-weight:600;margin:0 2px 6px}
-.padlbl span{display:inline-flex;gap:6px;align-items:center}.padlbl svg{width:18px;height:18px;color:var(--g)}
-.pad{position:relative;height:clamp(180px,32vh,260px);border:2px dashed #b9e2c9;border-radius:18px;background:#fff;touch-action:none;overflow:hidden}
-.pad canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
-.ph{position:absolute;inset:0;display:grid;place-items:center;color:#9cc1ad;font-size:20px;pointer-events:none;text-align:center}
-.base{position:absolute;left:8%;right:8%;bottom:26%;border-bottom:1.5px solid #d3ecdd;pointer-events:none}
-.base::before{content:"x";position:absolute;left:-16px;bottom:-4px;color:#9cc1ad;font-size:16px}
-.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}.sp{flex:1}
-.link{background:none;border:0;padding:10px 0 0;cursor:pointer;font-size:14px;color:var(--mut);text-decoration:underline}
-.link.danger{color:var(--red)}
-.sigbox{background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px;margin:12px 0}
-.sigbox img{display:block;width:100%;height:auto;max-height:260px;object-fit:contain}
-.done{text-align:center;padding:12px 8px 24px}.done .mini{animation:pop .35s ease-out}
-.done .big{width:88px;height:88px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;margin:0 auto 14px;animation:pop .3s ease-out;box-shadow:0 0 0 12px var(--mint)}
-.done .big svg{width:46px;height:46px}.done p{font-size:18px;margin:6px 0 0}
-.fld{display:grid;gap:6px;margin-bottom:12px;font-weight:500}
-.fld small{font-weight:400;color:var(--mut)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-label.drop{display:grid;place-items:center;text-align:center;gap:6px;border:2px dashed var(--line);border-radius:18px;padding:22px;cursor:pointer;background:var(--bg);margin:14px 0}
-label.drop:hover{border-color:var(--g)}label.drop input{position:absolute;opacity:0;width:1px;height:1px}
-label.drop svg{width:34px;height:34px;color:var(--g)}
-.or{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:14px;margin:8px 0}.or::before,.or::after{content:"";flex:1;border-top:1px solid var(--line)}
-.prev{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:12px 0}
-.prev table{width:100%;border-collapse:collapse;font-size:15px}
-.prev td,.prev th{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left}
-.prev th{background:var(--mint);font-weight:600}.prev tr:last-child td{border-bottom:0}
-.prev td:first-child{width:48px;text-align:right;color:var(--mut);font-variant-numeric:tabular-nums}
-.big3{display:grid;gap:10px;margin-top:14px}.big3 .btn{height:auto;padding:14px 16px;justify-content:flex-start;text-align:left;white-space:normal;display:block}
-.big3 .btn small{display:block;font-weight:400;color:var(--mut);font-size:14px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#123d29;color:#fff;padding:12px 18px;border-radius:16px;box-shadow:var(--sh);opacity:0;pointer-events:none;transition:.25s;z-index:30;max-width:calc(100% - 32px)}
-.toast.on{opacity:1;transform:translateX(-50%)}
-.ro .adm{display:none!important}
-[hidden]{display:none!important}
-@media(hover:none){.p:hover{transform:none;box-shadow:none}.p:active{transform:scale(.985)}.kbd{display:none}}
-@media(min-width:601px) and (max-width:1024px){.mascot{width:130px}.list{grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}}
-@media(max-width:600px){.top{grid-template-columns:minmax(0,1fr) auto;gap:12px 10px}.top .live{grid-column:1/-1}.mascot{width:112px}.live{justify-content:space-between;padding:12px 16px}.ringw{width:88px;height:88px}.rt b{font-size:24px}
-.find input{height:56px;font-size:17px}.find>svg{top:17px}.clr{top:8px}.kbd{display:none}.steps{font-size:14px;gap:6px 12px}
-.bar{display:grid;grid-template-columns:minmax(0,1fr)}
-.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1*max(5vw,16px));padding:0 max(5vw,16px)}.chips::-webkit-scrollbar{display:none}
-.bar>.tools{display:grid;grid-template-columns:minmax(0,1fr) repeat(4,46px);gap:6px}.tools input[type=date]{width:100%}.bar .tools .btn span{display:none}.bar .tools .btn{padding:0;justify-content:center}
-.empty .tools{flex-direction:column}
-.row2{grid-template-columns:1fr}.tm b{font-size:18px}.p{padding:12px}.av{width:42px;height:42px}.go{padding:0 12px 0 10px}
-.ov{place-items:end center;padding:0}
-.md{width:100%;border-radius:26px 26px 0 0;max-height:94dvh;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:sheet .25s ease-out}
-.acts .btn{flex:1 1 auto;justify-content:center}.acts .sp{display:none}
-.pad{height:clamp(170px,30vh,230px)}.toast{bottom:auto;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-20px)}}
-@media(max-width:340px){.go span{display:none}.go{padding:0 12px}}
-@keyframes sheet{from{transform:translateY(40px);opacity:0}}
-@media(max-height:500px) and (orientation:landscape){.hin{padding-block:14px 18px}h1{font-size:30px;margin-top:8px}.ringw{width:76px;height:76px}
-.ov{padding:8px;place-items:center}.md{max-height:calc(100dvh - 16px);padding:14px 18px;border-radius:20px}.mh{margin-bottom:8px}.av.lg{width:44px;height:44px}.when{padding:6px 12px;margin-bottom:8px}.when b{font-size:22px}.pad{height:42vh}.acts{margin-top:8px}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+:root{
+  --g950:#022c22;--g900:#064e3b;--g800:#065f46;--g700:#047857;--g600:#059669;--g500:#10b981;--g400:#34d399;--g300:#6ee7b7;--g200:#a7f3d0;--g100:#d1fae5;--g50:#ecfdf5;
+  --lime:#bef264;--teal:#14b8a6;--amber:#d97706;--amber100:#fef3c7;--red:#dc2626;--red50:#fef2f2;
+  --ink:#0f2a20;--mute:#5b7a6c;--line:#dcefe4;--bg:#f4fbf6;--card:#fff;
+  --shadow:0 1px 2px rgba(6,95,70,.06),0 10px 30px -14px rgba(6,95,70,.25);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:'IBM Plex Sans Thai',system-ui,-apple-system,sans-serif;color:var(--ink);font-size:15px;line-height:1.5;
+  background:radial-gradient(1100px 520px at 105% -10%,rgba(190,242,100,.35),transparent 60%),radial-gradient(900px 520px at -10% -5%,rgba(167,243,208,.5),transparent 60%),var(--bg);
+  min-height:100vh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+h1,h2,h3,.disp{font-family:'Anuphan',sans-serif;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+@media(min-width:768px){.wrap{padding:24px 28px}}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:26px;color:#fff;padding:22px 20px 70px;
+  background:linear-gradient(135deg,#065f46 0%,#059669 45%,#10b981 75%,#34d399 100%);box-shadow:0 20px 50px -22px rgba(4,120,87,.7)}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.hero::before{width:340px;height:340px;right:-90px;top:-140px;background:radial-gradient(circle,rgba(190,242,100,.55),transparent 65%)}
+.hero::after{width:260px;height:260px;left:-80px;bottom:-150px;background:radial-gradient(circle,rgba(255,255,255,.25),transparent 65%)}
+.hero-top{position:relative;display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;gap:14px;align-items:center}
+.logo{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);display:grid;place-items:center;border:1px solid rgba(255,255,255,.35);flex:none}
+.brand small{display:block;opacity:.85;font-size:13px;letter-spacing:.3px}
+.brand h1{font-size:24px;font-weight:700;line-height:1.2}
+@media(min-width:768px){.brand h1{font-size:30px}.hero{padding:30px 32px 78px}}
+.clock{text-align:right}
+.clock .t{font-family:'Anuphan';font-size:34px;font-weight:600;letter-spacing:1px;line-height:1;font-variant-numeric:tabular-nums}
+.clock .d{opacity:.9;font-size:13.5px;margin-top:6px}
+@media(max-width:560px){.clock{text-align:left;width:100%}.clock .t{font-size:30px}}
+.hero-meta{position:relative;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);font-size:13px}
+
+/* stats */
+.stats{position:relative;margin:-48px 10px 0;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:768px){.stats{grid-template-columns:1.3fr 1fr 1fr 1fr;margin:-52px 20px 0;gap:14px}}
+.stat{background:var(--card);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow);border:1px solid var(--line);display:flex;align-items:center;gap:12px;min-height:84px}
+.stat .n{font-family:'Anuphan';font-size:28px;font-weight:700;line-height:1}
+.stat .l{color:var(--mute);font-size:13px;margin-top:4px}
+.stat .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none}
+.ring{position:relative;width:62px;height:62px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:'Anuphan';font-weight:700;font-size:15px;color:var(--g700)}
+
+/* banner */
+.banner{margin-top:16px;padding:12px 14px;border-radius:14px;font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.banner.info{background:var(--g50);border:1px solid var(--g200);color:var(--g900)}
+.banner.warn{background:var(--amber100);border:1px solid #fcd34d;color:#78350f}
+
+/* toolbar */
+.toolbar{position:sticky;top:0;z-index:20;margin:18px -16px 0;padding:10px 16px;background:rgba(244,251,246,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid transparent}
+@media(min-width:768px){.toolbar{margin:18px -28px 0;padding:12px 28px}}
+.toolbar.stuck{border-bottom-color:var(--line)}
+.tb-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search{flex:1 1 220px;position:relative}
+.search input{width:100%;height:46px;border-radius:14px;border:1.5px solid var(--line);background:#fff;padding:0 14px 0 42px;outline:none;transition:.15s}
+.search input:focus{border-color:var(--g400);box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mute)}
+.seg{display:flex;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:4px;height:46px}
+.seg button{border:0;background:none;padding:0 12px;border-radius:10px;font-size:14px;color:var(--mute);white-space:nowrap}
+.seg button.on{background:var(--g600);color:#fff;font-weight:600;box-shadow:0 4px 12px -4px rgba(5,150,105,.6)}
+.date{height:46px;border-radius:14px;border:1.5px solid var(--line);background:#fff;padding:0 12px;outline:none}
+.tb-admin{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:640px){.toolbar{position:static}.seg{flex:1 1 100%}.seg button{flex:1;padding:0 6px}.date{flex:1}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 16px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font-weight:500;transition:transform .08s,box-shadow .15s,background .15s;white-space:nowrap}
+.btn:hover{border-color:var(--g300);background:var(--g50)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(135deg,var(--g600),var(--g500));color:#fff;border:0;box-shadow:0 8px 20px -8px rgba(5,150,105,.7);font-weight:600}
+.btn.primary:hover{background:linear-gradient(135deg,var(--g700),var(--g600))}
+.btn.primary:disabled{background:#cfe7da;box-shadow:none;cursor:not-allowed;color:#fff}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.danger{color:var(--red);border-color:#fecaca;background:#fff}
+.btn.danger:hover{background:var(--red50)}
+.btn.sm{min-height:38px;padding:0 12px;font-size:14px;border-radius:12px}
+.btn.icon{padding:0;width:46px}
+
+/* list */
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;margin:18px 2px 10px;gap:10px}
+.sec-h h2{font-size:18px}
+.sec-h span{color:var(--mute);font-size:13px}
+.list{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:640px){.list{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.list{grid-template-columns:repeat(3,1fr)}}
+.list>*{min-width:0}
+.card{min-width:0;position:relative;display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 12px 12px 14px;box-shadow:0 1px 2px rgba(6,95,70,.04);transition:transform .15s,box-shadow .15s,border-color .15s;cursor:pointer;text-align:left;width:100%;min-height:78px}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--g200)}
+.card.done{background:linear-gradient(90deg,var(--g50),#fff 55%);border-color:var(--g200)}
+.card.done::before,.card.late::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--g500)}
+.card.late{background:linear-gradient(90deg,#fffbeb,#fff 55%);border-color:#fde68a}
+.card.late::before{background:#f59e0b}
+.av{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-family:'Anuphan';font-weight:700;font-size:19px;color:#fff;flex:none}
+.av.big{width:56px;height:56px;font-size:23px;border-radius:17px}
+.who{flex:1;min-width:0}
+.who .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .org{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .sub{font-size:12.5px;color:var(--mute);display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:2px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.chip.ok{background:var(--g100);color:var(--g800)}
+.chip.late{background:var(--amber100);color:#92400e}
+.chip.wait{background:#eef2f0;color:#5b6b63}
+.right{display:flex;align-items:center;gap:8px;flex:none}
+.sigthumb{width:74px;height:34px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px}
+.cta{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:12px;background:var(--g600);color:#fff;font-weight:600;font-size:14px;box-shadow:0 6px 14px -6px rgba(5,150,105,.7)}
+.card:hover .cta{background:var(--g700)}
+.who .sub .chip{flex:none}
+@media(max-width:420px){.cta{padding:0 11px;font-size:13.5px}.sigthumb{width:56px}}
+.timebig{font-family:'Anuphan';font-weight:700;color:var(--g800);font-size:15px;font-variant-numeric:tabular-nums}
+.card.late .timebig{color:#92400e}
+
+.empty{text-align:center;padding:48px 20px;background:#fff;border:1.5px dashed var(--g200);border-radius:22px}
+.empty h3{font-size:20px;margin:12px 0 6px}
+.empty p{color:var(--mute);margin:0 0 18px}
+.skeleton{height:78px;border-radius:18px;background:linear-gradient(90deg,#eaf5ee,#f6fbf8,#eaf5ee);background-size:200% 100%;animation:sh 1.3s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+footer{color:var(--mute);font-size:12.5px;text-align:center;padding:30px 0 20px}
+
+/* modal */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(2,44,34,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.sheet{background:#fff;border-radius:26px;width:min(560px,100%);max-height:92vh;overflow:auto;box-shadow:0 30px 80px -20px rgba(2,44,34,.5);animation:pop .2s cubic-bezier(.2,.9,.3,1.2)}
+.sheet.wide{width:min(720px,100%)}
+@keyframes pop{from{transform:translateY(16px) scale(.98);opacity:0}}
+@media(max-width:640px){
+  .overlay{align-items:flex-end;padding:0}
+  .sheet,.sheet.wide{width:100%;border-radius:26px 26px 0 0;max-height:94vh;padding-bottom:env(safe-area-inset-bottom);animation:up .25s cubic-bezier(.2,.9,.3,1)}
+  @keyframes up{from{transform:translateY(100%)}}
+}
+.sh-head{display:flex;gap:14px;align-items:center;padding:20px 20px 0}
+.sh-head h3{font-size:20px;line-height:1.25}
+.sh-head p{margin:2px 0 0;color:var(--mute);font-size:13.5px}
+.sh-head .x{margin-left:auto;align-self:flex-start}
+.sh-body{padding:16px 20px 20px}
+.grab{display:none;width:44px;height:5px;border-radius:9px;background:#d5e6dc;margin:10px auto 0}
+@media(max-width:640px){.grab{display:block}}
+.timebox{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,var(--g50),#f7fee7);border:1px solid var(--g100)}
+.timebox .tt{font-family:'Anuphan';font-size:30px;font-weight:700;color:var(--g800);font-variant-numeric:tabular-nums;line-height:1}
+.timebox .lb{font-size:12.5px;color:var(--mute)}
+.lbl{display:flex;justify-content:space-between;align-items:center;font-weight:600;margin:16px 0 8px}
+.lbl small{font-weight:400;color:var(--mute)}
+.padwrap{position:relative;height:210px;border-radius:18px;border:2px dashed var(--g300);background:linear-gradient(#fff,#fbfffc);touch-action:none;overflow:hidden}
+@media(min-width:768px){.padwrap{height:230px}}
+.padwrap canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.padwrap .ph{position:absolute;inset:0;display:grid;place-items:center;color:#9bbfae;pointer-events:none;font-size:15px;gap:6px}
+.padwrap .base{position:absolute;left:22px;right:22px;bottom:52px;border-bottom:1.5px solid #cfe7da;pointer-events:none}
+.padwrap .base::before{content:"✕";position:absolute;left:-2px;bottom:4px;color:#b4d3c4;font-size:14px}
+.actions{display:flex;gap:10px;margin-top:16px}
+.actions .btn{flex:1}
+.actions .btn.primary{flex:2}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field label{font-weight:600;font-size:14px}
+.field input,.field textarea{border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:#fff;min-height:46px}
+.field input:focus,.field textarea:focus{border-color:var(--g400);box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:26px 16px;border-radius:18px;border:2px dashed var(--g300);background:var(--g50);cursor:pointer;transition:.15s}
+.drop.over,.drop:hover{background:var(--g100);border-color:var(--g500)}
+.drop b{font-family:'Anuphan';font-size:16px}
+.drop small{color:var(--mute)}
+.hint{font-size:13px;color:var(--mute);background:#f7faf8;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:12px}
+.hint code{background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px}
+.prev{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:260px}
+.prev table{width:100%;border-collapse:collapse;font-size:13.5px}
+.prev th{position:sticky;top:0;background:var(--g50);text-align:left;padding:8px 10px;font-weight:600;color:var(--g900)}
+.prev td{padding:7px 10px;border-top:1px solid var(--line)}
+.divider{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:13px;margin:18px 0 12px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.opt{display:flex;gap:12px;align-items:center;padding:14px;border:1.5px solid var(--line);border-radius:16px;background:#fff;width:100%;text-align:left;margin-bottom:10px;transition:.15s}
+.opt:hover{border-color:var(--g300);background:var(--g50)}
+.opt .oi{width:42px;height:42px;border-radius:12px;background:var(--g100);color:var(--g700);display:grid;place-items:center;flex:none}
+.opt b{display:block}
+.opt small{color:var(--mute)}
+.sigbig{width:100%;border:1px solid var(--line);border-radius:16px;background:#fff;display:block}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin:14px 0}
+.kv dt{color:var(--mute)}
+.kv dd{margin:0;font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:80;background:var(--g900);color:#fff;padding:12px 18px;border-radius:14px;box-shadow:0 14px 30px -10px rgba(2,44,34,.6);font-size:14px;display:flex;gap:8px;align-items:center;max-width:calc(100% - 32px);animation:pop .2s}
+.toast.err{background:#7f1d1d}
+.success{text-align:center;padding:26px 20px 24px}
+.success .ok{width:84px;height:84px;margin:0 auto 12px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--g400),var(--g600));display:grid;place-items:center;box-shadow:0 14px 30px -10px rgba(5,150,105,.8);animation:pop .35s cubic-bezier(.2,.9,.3,1.4)}
+.success h3{font-size:22px}
+.success p{color:var(--mute);margin:6px 0 0}
+.hide{display:none!important}
+
+/* ===== ธีมพาสเทลสายรุ้ง ===== */
+:root{--ink:#3b3355;--mute:#7c7495;--line:#ece6f7;--bg:#fdfbff;--rb:linear-gradient(120deg,#ffd6e7 0%,#ffe2c6 18%,#fff4b8 34%,#d4f5d2 50%,#c9ecfd 66%,#d9d3ff 82%,#f3d4ff 100%);--btn:linear-gradient(120deg,#f9a8d4,#fcd34d 30%,#86efac 52%,#7dd3fc 74%,#c4b5fd);--lav:#7c5cdb}
+body{background:radial-gradient(900px 480px at 105% -10%,rgba(253,224,71,.22),transparent 60%),radial-gradient(800px 480px at -10% -5%,rgba(249,168,212,.28),transparent 60%),radial-gradient(900px 600px at 50% 110%,rgba(125,211,252,.22),transparent 60%),var(--bg)}
+.hero{color:var(--ink);background:var(--rb);box-shadow:0 22px 50px -24px rgba(124,92,219,.55)}
+.hero::before{background:radial-gradient(circle,rgba(255,255,255,.75),transparent 65%)}
+.hero::after{background:radial-gradient(circle,rgba(255,255,255,.6),transparent 65%)}
+.logo{background:rgba(255,255,255,.6);border-color:#fff}
+.logo svg circle,.logo svg path:not([fill]){stroke:var(--lav)}
+.brand small,.clock .d{opacity:.8}
+.pill{background:rgba(255,255,255,.6);border-color:rgba(255,255,255,.95);color:var(--ink)}
+.stat{border-color:var(--line)}
+.ring span{color:var(--lav)}
+.btn:hover{border-color:#d8ccfb;background:#faf7ff}
+.btn.primary,.seg button.on,.cta{background:var(--btn);background-size:160% 100%;color:#2e2550;box-shadow:0 8px 20px -10px rgba(124,92,219,.7);text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.btn.primary:hover,.card:hover .cta{background:var(--btn);background-size:160% 100%;background-position:100% 0;filter:saturate(1.15)}
+.btn.primary:disabled{background:#ebe7f5;color:#a59fbb;box-shadow:none;text-shadow:none;filter:none}
+.search input:focus,.field input:focus,.field textarea:focus{border-color:#c4b5fd;box-shadow:0 0 0 4px rgba(196,181,253,.3)}
+.card:hover{border-color:#ddd3fb}
+.card.done{background:linear-gradient(90deg,#effcf3,#fff 55%);border-color:#c8f0d3}
+.card.done::before{background:linear-gradient(#f9a8d4,#fcd34d,#86efac,#7dd3fc,#c4b5fd)}
+.card.late{background:linear-gradient(90deg,#fff8e6,#fff 55%);border-color:#fde8a8}
+.card.late::before{background:#fbbf24}
+.av{color:#3b3355!important;font-weight:700}
+.chip.ok{background:#d9f7e3;color:#1f7a45}
+.chip.late{background:#ffeccc;color:#9a5b00}
+.chip.wait{background:#f1eef8;color:#7c7495}
+.timebig{color:#4c3fa3}
+.card.late .timebig{color:#9a5b00}
+.empty{border-color:#ddd3fb}
+.overlay{background:rgba(59,51,85,.4)}
+.timebox{background:var(--rb);border-color:#fff}
+.timebox .tt{color:#4c3fa3}
+.padwrap{border-color:#c4b5fd;background:linear-gradient(#fff,#fdfbff)}
+.padwrap .base{border-bottom-color:#e4dcfb}
+.padwrap .ph{color:#b3a8d6}
+.drop{background:#faf7ff;border-color:#c4b5fd}
+.drop.over,.drop:hover{background:#f3eeff;border-color:#a78bfa}
+.prev th{background:#f5f1ff;color:#3b3355}
+.opt:hover{border-color:#d8ccfb;background:#faf7ff}
+.opt .oi{background:linear-gradient(135deg,#fde2f0,#e2f2ff);color:#6d4fd0}
+.banner.info{background:#f5f1ff;border-color:#e4dcfb;color:#3b3355}
+.toast{background:#3b3355}
+.success .ok{background:conic-gradient(from 200deg,#f9a8d4,#fcd34d,#86efac,#7dd3fc,#c4b5fd,#f9a8d4);box-shadow:0 14px 30px -10px rgba(124,92,219,.6)}
+.success .ok svg{stroke:#3b3355}
+a{color:#6d4fd0!important}
+.toolbar{background:rgba(253,251,255,.88)}
+.grab{background:#e4dcfb}
+.padwrap .base::before{color:#c9bdf0}
+
+.mascot-wrap{position:absolute;right:250px;top:10px;width:132px;z-index:1;pointer-events:none}
+.mascot{width:100%;height:auto;display:block;filter:drop-shadow(0 10px 14px rgba(124,92,219,.25));animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-7px) rotate(-2deg)}}
+.bubble{position:absolute;right:112px;top:18px;white-space:nowrap;background:#fff;color:#3b3355;font-size:13px;font-weight:600;padding:6px 12px;border-radius:14px 14px 4px 14px;box-shadow:0 6px 16px -8px rgba(59,51,85,.4)}
+@media(max-width:900px){.mascot-wrap{right:200px;top:14px;width:100px}.bubble{display:none}}
+@media(max-width:760px) and (min-width:561px){.mascot-wrap{display:none}}
+@media(max-width:560px){.mascot-wrap{right:12px;top:118px;bottom:auto;width:92px}}
+@media (prefers-reduced-motion:reduce){.mascot{animation:none}}
+.success .mascot{width:96px;margin:0 auto 6px;animation:bob 2s ease-in-out infinite}
+
+.pill.ver{cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:#4c3fa3;background:rgba(255,255,255,.85)}
+.pill.ver:hover{background:#fff}
+.verlink{margin-top:6px;border:0;background:none;color:#7c5cdb;font:inherit;font-size:12.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.cl{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.cl li{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:#fff}
+.cl li.now{border-color:#c4b5fd;background:linear-gradient(120deg,#faf7ff,#fff)}
+.cl .vh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.cl .vtag{font-family:'Anuphan';font-weight:700;font-size:15px;padding:2px 10px;border-radius:999px;background:var(--rb);color:#3b3355}
+.cl .vd{color:var(--mute);font-size:12.5px}
+.cl ul{margin:4px 0 0;padding-left:20px;font-size:14px}
 </style>
 </head>
 <body>
-<header class="hero">
- <span class="blob b2"></span>
- <div class="hin">
-  <div class="top">
-   <div>
-    <h1 id="ttl">Claude AI</h1>
-    <p class="dl" id="dline"></p>
-   </div>
-   <div class="mascot" data-m="hero" aria-hidden="true"></div>
-   <div class="live">
-    <div><div class="clk" id="clk">--:--:--</div><div class="sync" id="sync" data-s="wait"><i></i><span>กำลังเชื่อมต่อ…</span></div></div>
-    <div class="ringw"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50" fill="none" stroke="#e3f6eb" stroke-width="12"/><circle id="arc" cx="60" cy="60" r="50" fill="none" stroke="#17a957" stroke-width="12" stroke-linecap="round" stroke-dasharray="314.2" stroke-dashoffset="314.2" transform="rotate(-90 60 60)"/></svg><div class="rt"><b id="rnum">0</b><span id="rtot">จาก 0 คน</span></div></div>
-   </div>
-  </div>
-  <div class="find">
-   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-   <input id="q" type="search" placeholder="พิมพ์ชื่อของคุณเพื่อค้นหา…" aria-label="ค้นหาชื่อ" autocomplete="off" enterkeyhint="search">
-   <span class="kbd" id="kbd">/</span>
-   <button class="clr" id="clr" aria-label="ล้างคำค้นหา" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-  </div>
-  <div class="steps" id="steps"><span><b>1</b>ค้นหาชื่อ (ไทย / อังกฤษ / บริษัท)</span><span><b>2</b>แตะ “เซ็นชื่อ” แล้วเซ็นด้วยนิ้วหรือเมาส์</span><span><b>3</b>กดยืนยัน เวลาบันทึกอัตโนมัติ</span></div>
-  <p class="qinfo" id="qinfo" hidden></p>
- </div>
-</header>
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-top">
+      <div class="brand">
+        <div class="logo">
+          <svg width="30" height="30" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" stroke="#fff" stroke-width="2.4" opacity=".9"/><path d="M10.5 16.5l3.8 3.8 7.4-8" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.5 4.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="#f9a8d4"/></svg>
+        </div>
+        <div>
+          <small>ระบบเช็คชื่อเข้าเรียนออนไลน์</small>
+          <h1>คลาส Claude AI</h1>
+        </div>
+      </div>
+      <div class="clock">
+        <div class="t" id="clock">--:--:--</div>
+        <div class="d" id="today">&nbsp;</div>
+      </div>
+    </div>
+    <div class="mascot-wrap"><svg class="mascot" viewBox="0 0 160 170" role="img" aria-label="ฮีโร่สายรุ้งประจำคลาส">
+  <defs>
+    <linearGradient id="mcape" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9a8d4"/><stop offset=".25" stop-color="#fcd34d"/><stop offset=".5" stop-color="#86efac"/><stop offset=".75" stop-color="#7dd3fc"/><stop offset="1" stop-color="#c4b5fd"/></linearGradient>
+    <linearGradient id="mbody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ece6ff"/></linearGradient>
+  </defs>
+  <path d="M42 78 Q20 130 30 158 Q80 146 130 158 Q140 130 118 78 Z" fill="url(#mcape)" opacity=".95"/>
+  <line x1="80" y1="22" x2="80" y2="8" stroke="#a78bfa" stroke-width="4" stroke-linecap="round"/>
+  <path d="M80 0l3.2 6.6 7.2 1-5.2 5 1.3 7.2L80 16.4l-6.5 3.4 1.3-7.2-5.2-5 7.2-1z" fill="#fcd34d" stroke="#f59e0b" stroke-width="1.2" stroke-linejoin="round"/>
+  <rect x="38" y="22" width="84" height="70" rx="32" fill="url(#mbody)" stroke="#c4b5fd" stroke-width="3"/>
+  <rect x="50" y="38" width="60" height="36" rx="18" fill="#3b3355"/>
+  <circle cx="67" cy="56" r="7" fill="#7dd3fc"/><circle cx="93" cy="56" r="7" fill="#7dd3fc"/>
+  <circle cx="69" cy="53.5" r="2.4" fill="#fff"/><circle cx="95" cy="53.5" r="2.4" fill="#fff"/>
+  <path d="M72 66 Q80 72 88 66" fill="none" stroke="#f9a8d4" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="44" cy="62" r="5" fill="#f9a8d4" opacity=".6"/><circle cx="116" cy="62" r="5" fill="#f9a8d4" opacity=".6"/>
+  <rect x="52" y="88" width="56" height="50" rx="20" fill="url(#mbody)" stroke="#c4b5fd" stroke-width="3"/>
+  <path d="M80 122c-9-6-14-10-14-16a7 7 0 0 1 14-2 7 7 0 0 1 14 2c0 6-5 10-14 16z" fill="#f9a8d4"/>
+  <path d="M54 100 Q36 92 34 74" fill="none" stroke="#c4b5fd" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="34" cy="70" r="8" fill="#fff" stroke="#c4b5fd" stroke-width="3"/>
+  <path d="M106 100 Q122 108 126 118" fill="none" stroke="#c4b5fd" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="127" cy="121" r="8" fill="#fff" stroke="#c4b5fd" stroke-width="3"/>
+  <rect x="60" y="134" width="14" height="22" rx="7" fill="#a78bfa"/><rect x="86" y="134" width="14" height="22" rx="7" fill="#a78bfa"/>
+  <path d="M22 40l2 4 4 2-4 2-2 4-2-4-4-2 4-2z" fill="#fcd34d"/><path d="M140 30l1.6 3.4 3.4 1.6-3.4 1.6-1.6 3.4-1.6-3.4-3.4-1.6 3.4-1.6z" fill="#7dd3fc"/>
+</svg><span class="bubble">มาเช็คชื่อกันเถอะ! ✨</span></div>
+    <div class="hero-meta">
+      <span class="pill" id="pillStart">🕘 เริ่มเรียน 09:00 น.</span>
+      <span class="pill" id="pillDate">📅 วันนี้</span>
+      <span class="pill" id="pillMode">● กำลังเชื่อมต่อ…</span>
+      <button class="pill ver" id="verPill" type="button" title="ดูประวัติการอัปเดต">🏷️ v-</button>
+    </div>
+  </header>
 
-<main class="wrap">
- <div class="bar">
-  <div class="chips" id="chips">
-   <button class="chip" data-f="all" aria-pressed="true">ทั้งหมด<b id="cAll">0</b></button>
-   <button class="chip" data-f="in" aria-pressed="false">มาแล้ว<b id="cIn">0</b></button>
-   <button class="chip" data-f="out" aria-pressed="false">ยังไม่มา<b id="cOut">0</b></button>
-   <button class="chip" data-f="late" aria-pressed="false">สาย<b id="cLate">0</b></button>
-  </div>
-  <div class="tools adm">
-   <input type="date" id="date" aria-label="วันที่เรียน">
-   <button class="btn" id="bImp" title="นำเข้า CSV/Excel" aria-label="นำเข้า CSV/Excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3h16v-3"/></svg><span>นำเข้า CSV/Excel</span></button>
-   <button class="btn" id="bAdd" title="เพิ่มชื่อ" aria-label="เพิ่มชื่อ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg><span>เพิ่มชื่อ</span></button>
-   <button class="btn" id="bExp" title="ส่งออก" aria-label="ส่งออก"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3m0 0L8 7m4-4 4 4M4 13v7h16v-7"/></svg><span>ส่งออก</span></button>
-   <button class="btn" id="bSet" title="ตั้งค่า" aria-label="ตั้งค่า"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
-  </div>
- </div>
- <p class="note" id="sampleNote" hidden>รายชื่อตัวอย่าง: กด “นำเข้า CSV/Excel” แล้วเลือก “แทนที่รายชื่อเดิม” เพื่อใช้รายชื่อผู้เรียนจริง</p>
- <ul class="list" id="list"></ul>
- <div class="empty" id="empty" hidden>
-  <div class="mini" data-m="sleep" style="width:150px" aria-hidden="true"></div>
-  <h2>ยังไม่มีรายชื่อผู้เรียน</h2>
-  <p class="sub" style="white-space:normal">นำเข้าไฟล์ CSV หรือ Excel ที่มีคอลัมน์ชื่อ หรือเพิ่มทีละคนก็ได้</p>
-  <div class="tools adm"><button class="btn pri" data-open="imp">นำเข้า CSV/Excel</button><button class="btn" data-open="add">เพิ่มชื่อทีละคน</button></div>
- </div>
- <div class="nomatch" id="noMatch" hidden><div class="mini" data-m="think" style="width:120px" aria-hidden="true"></div><p>ไม่พบชื่อนี้ ลองพิมพ์แค่ชื่อต้น หรือชื่อภาษาอังกฤษ หรือแจ้งผู้สอนเพื่อเพิ่มชื่อ</p></div>
-</main>
+  <section class="stats" id="stats"></section>
+  <div id="banners"></div>
 
-<div class="ov" id="mSign" role="dialog" aria-modal="true" aria-labelledby="sName">
- <div class="md">
-  <div id="signPane">
-   <div class="mh"><span class="av lg" id="sAv"></span><div><h2 id="sName"></h2><p class="sub" id="sOrg"></p></div></div>
-   <div class="when"><div><span class="sub">เวลาเช็คอิน</span><b id="sClk">--:--:--</b></div><span class="tag" id="sTag"></span></div>
-   <div class="padlbl"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M14 6l3 3"/></svg>ลายเซ็น</span><button class="link" id="sClr" style="padding:0">ล้างแล้วเซ็นใหม่</button></div>
-   <div class="pad" id="pad"><canvas id="cv"></canvas><span class="ph" id="ph">เซ็นชื่อตรงนี้<br><small style="font-size:14px">ใช้นิ้ว ปากกา หรือเมาส์</small></span><span class="base"></span></div>
-   <div class="acts"><span class="sp"></span><button class="btn" data-close>ยกเลิก</button><button class="btn pri" id="sOk" disabled>ยืนยันเช็คชื่อ</button></div>
-   <button class="link danger adm" id="sDel">ลบชื่อนี้ออกจากรายชื่อ</button>
+  <div class="toolbar" id="toolbar">
+    <div class="tb-row">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="ค้นหาชื่อหรือรหัส…" autocomplete="off">
+      </div>
+      <div class="seg" id="seg">
+        <button data-f="all" class="on">ทั้งหมด</button>
+        <button data-f="wait">ยังไม่มา</button>
+        <button data-f="done">มาแล้ว</button>
+        <button data-f="late">มาสาย</button>
+      </div>
+      <input class="date" id="date" type="date" aria-label="วันที่">
+      <button class="btn hide" id="bLogin">🔒 โหมดผู้สอน</button>
+      <div class="tb-admin hide" id="adminBar">
+        <button class="btn" id="bImport"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>นำเข้ารายชื่อ</button>
+        <button class="btn" id="bExport"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg>ส่งออก</button>
+        <button class="btn icon" id="bSettings" aria-label="ตั้งค่า"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      </div>
+    </div>
   </div>
-  <div id="donePane" class="done" hidden><div class="mini" data-m="joy" style="width:170px" aria-hidden="true"></div><h2>เช็คชื่อเรียบร้อย</h2><p id="dTxt"></p></div>
- </div>
+
+  <div class="sec-h"><h2 id="listTitle">รายชื่อผู้เข้าเรียน</h2><span id="listCount"></span></div>
+  <main id="list" class="list"></main>
+  <footer>แตะที่ชื่อของคุณ → เซ็นชื่อ → กด “ยืนยันเข้าเรียน” · เวลาอ้างอิงประเทศไทย (UTC+7)<br><button type="button" class="verlink" id="verFoot">เวอร์ชัน -</button></footer>
 </div>
 
-<div class="ov" id="mView" role="dialog" aria-modal="true" aria-labelledby="vName">
- <div class="md">
-  <div class="mh"><span class="av lg" id="vAv"></span><div><h2 id="vName"></h2><p class="sub" id="vOrg"></p></div></div>
-  <div class="when"><div><span class="sub" id="vDate">เวลาเช็คอิน</span><b id="vClk"></b></div><span class="tag" id="vTag"></span></div>
-  <div class="sigbox"><img id="vSig" alt="ลายเซ็น"></div>
-  <div class="acts"><button class="btn dz adm" id="vUndo">ยกเลิกการเช็คชื่อ</button><span class="sp"></span><button class="btn pri" data-close>ปิด</button></div>
- </div>
-</div>
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
 
-<div class="ov" id="mImp" role="dialog" aria-modal="true" aria-labelledby="iT">
- <div class="md">
-  <h2 id="iT">นำเข้ารายชื่อผู้เรียน</h2>
-  <p class="sub" style="white-space:normal">รองรับ .csv .xlsx .xls และไฟล์ export จาก Google Form (แยกคนที่ 2–5 ให้อัตโนมัติ)</p>
-  <label class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v4h16v-4"/></svg><b>เลือกไฟล์ CSV หรือ Excel</b><span class="sub">หรือลากไฟล์มาวางตรงนี้</span><input type="file" id="file" accept=".csv,.txt,.xlsx,.xls,text/csv"></label>
-  <div class="or">หรือวางรายชื่อ (1 บรรทัดต่อ 1 คน หรือคัดลอกจากตาราง)</div>
-  <textarea id="paste" rows="4" placeholder="สมชาย ใจดี&#9;บริษัท ABC&#10;กมลวรรณ ศรีสุข"></textarea>
-  <div class="acts"><button class="btn" id="iPaste">ใช้ข้อความนี้</button><button class="link" id="iTpl">ดาวน์โหลดไฟล์ตัวอย่าง CSV</button><span class="sp"></span><button class="btn" data-close>ปิด</button></div>
-  <div id="iPrev" hidden>
-   <div class="prev"><table><thead><tr><th>#</th><th>ชื่อ-นามสกุล</th><th>หน่วยงาน</th></tr></thead><tbody id="iRows"></tbody></table></div>
-   <p class="sub" id="iInfo" style="white-space:normal"></p>
-   <div class="acts"><button class="btn" id="iApp">เพิ่มต่อท้าย</button><button class="btn pri" id="iRep">แทนที่รายชื่อเดิม</button></div>
-  </div>
- </div>
-</div>
-
-<div class="ov" id="mAdd" role="dialog" aria-modal="true" aria-labelledby="aT">
- <form class="md" id="fAdd">
-  <h2 id="aT" style="margin-bottom:14px">เพิ่มผู้เรียน</h2>
-  <label class="fld">ชื่อ-นามสกุล<input id="aName" required autocomplete="off"></label>
-  <label class="fld">ชื่อภาษาอังกฤษ <small>(ไม่บังคับ ช่วยให้ค้นหาง่ายขึ้น)</small><input id="aEn" autocomplete="off"></label>
-  <label class="fld">หน่วยงาน / บริษัท <small>(ไม่บังคับ)</small><input id="aOrg" autocomplete="off"></label>
-  <div class="acts"><span class="sp"></span><button type="button" class="btn" data-close>ยกเลิก</button><button class="btn pri" type="submit">เพิ่มรายชื่อ</button></div>
- </form>
-</div>
-
-<div class="ov" id="mSet" role="dialog" aria-modal="true" aria-labelledby="tT">
- <form class="md" id="fSet">
-  <h2 id="tT" style="margin-bottom:14px">ตั้งค่าคลาส</h2>
-  <label class="fld">ชื่อคลาส<input id="tTitle" required></label>
-  <div class="row2"><label class="fld">เวลาเริ่มเรียน<input id="tStart" type="time" required></label><label class="fld">ผ่อนผันสาย (นาที)<input id="tGrace" type="number" min="0" max="180" required></label></div>
-  <label class="fld" id="tKeyRow" hidden>รหัสผู้ดูแล (ADMIN_KEY ใน Apps Script)<input id="tKey" type="password" autocomplete="off"></label>
-  <div class="acts"><button type="button" class="btn dz" id="tClear">ล้างรายชื่อทั้งหมด</button><span class="sp"></span><button type="button" class="btn" data-close>ยกเลิก</button><button class="btn pri" type="submit">บันทึก</button></div>
- </form>
-</div>
-
-<div class="ov" id="mExp" role="dialog" aria-modal="true" aria-labelledby="eT">
- <div class="md">
-  <h2 id="eT">ส่งออกข้อมูลการเข้าเรียน</h2>
-  <p class="sub" id="eSub" style="white-space:normal"></p>
-  <div class="big3">
-   <button class="btn" id="eCsv">ดาวน์โหลด CSV<small>เปิดได้ทั้ง Excel และนำเข้า Google Sheets (File › Import)</small></button>
-   <button class="btn" id="eSheet">ดาวน์โหลดใบเซ็นชื่อพร้อมลายเซ็น<small>ไฟล์ HTML เปิดในเบราว์เซอร์แล้วสั่งพิมพ์ได้</small></button>
-   <button class="btn" id="eCopy">คัดลอกตารางไปวางใน Google Sheets<small>กดแล้วไปที่ Google Sheets คลิกช่อง A1 แล้ววาง (Ctrl/Cmd + V)</small></button>
-  </div>
-  <textarea id="eBox" rows="6" hidden readonly aria-label="ข้อมูลสำหรับคัดลอก"></textarea>
-  <div class="acts"><span class="sp"></span><button class="btn pri" data-close>ปิด</button></div>
- </div>
-</div>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 <script src="config.js"></script>
 <script>
-/* ค่าตั้งค่าอยู่ในไฟล์ config.js (แก้ที่นั่นไฟล์เดียว) */
-const CONFIG=Object.assign({SHEET_API:'',POLL_MS:15000},window.ATTENDANCE_CONFIG||{});
-</script>
-<script>
-{
+(()=>{
+'use strict';
+/* ตั้งค่า URL ของ Google Apps Script ได้ที่ไฟล์ config.js */
+const SHEET_API_URL=String((window.ATTENDANCE_CONFIG&&window.ATTENDANCE_CONFIG.SHEET_API_URL)||'').trim();
+const TZ='Asia/Bangkok';
+/* ===== เวอร์ชันของเว็บ: อัปเดตทุกครั้งที่ปล่อยของใหม่ (ดู CHANGELOG.md) ===== */
+const APP_VERSION='1.4.0';
+const APP_UPDATED='2026-11-14';
+const CHANGELOG=[
+  {v:'1.4.0',d:'2026-11-14',items:['แสดงเลขเวอร์ชันบนเว็บ กดดูประวัติการอัปเดตได้','จัดไฟล์พร้อมขึ้น GitHub Pages']},
+  {v:'1.3.0',d:'2026-11-14',items:['เพิ่มฮีโร่สายรุ้งประจำคลาส ทั้งส่วนหัวเว็บและหน้าเช็คชื่อสำเร็จ']},
+  {v:'1.2.0',d:'2026-11-14',items:['เปลี่ยนเป็นธีมพาสเทลสายรุ้ง','แก้ข้อความแจ้งเตือนผิดหลังกดยืนยันเข้าเรียน']},
+  {v:'1.1.0',d:'2026-11-14',items:['บันทึกลง Google Sheet ผ่าน Google Apps Script','โหมดผู้สอน (ADMIN_PIN)','นำเข้าไฟล์ Google Form ที่มีหลายคนในแถวเดียว']},
+  {v:'1.0.0',d:'2026-11-14',items:['เปิดตัวเว็บเช็คชื่อ: รายชื่อ เซ็นลายเซ็น บันทึกเวลา ตรงเวลา/มาสาย','นำเข้า CSV/Excel และส่งออก CSV / Google Sheets','ใช้ได้ทั้งมือถือ แท็บเล็ต คอมพิวเตอร์']}
+];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const p2=n=>String(n).padStart(2,'0');
-const ymd=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
-const hm=d=>p2(d.getHours())+':'+p2(d.getMinutes());
-const hms=d=>hm(d)+':'+p2(d.getSeconds());
-const thDate=s=>new Date(s+'T00:00').toLocaleDateString('th-TH-u-ca-gregory',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-const uid=()=>'p'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-3);
-const norm=s=>String(s||'').toLowerCase().replace(/[\s.\-_]+/g,'');
-const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-const PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/></svg>';
-const PAL=[['#e3f6ea','#127a43'],['#eef9d4','#4f7a0e'],['#dff5f1','#0f766e'],['#e8f3e1','#3f6b25'],['#fff6d8','#8a6100'],['#e6f2fb','#1f5f8b'],['#f1ecfb','#5b45a3'],['#fdeeea','#a2442f']];
-const avStyle=n=>{let h=0;for(const c of String(n))h=(h*31+c.codePointAt(0))>>>0;const [b,f]=PAL[h%PAL.length];return `background:${b};color:${f}`};
-const DEF={title:'Claude AI',start:'09:00',grace:15,people:[],sample:false};
-const S={cls:{...DEF},checks:{},date:ymd(new Date()),filter:'all',q:'',admin:true,canWrite:true,mode:'local',db:null,dl:null};
-const LK='tesr-attendance-v1',KK='tesr-attendance-admin-key';
-const lsGet=()=>{try{return JSON.parse(localStorage.getItem(LK))||{}}catch(e){return {}}};
-const lsSet=o=>{try{localStorage.setItem(LK,JSON.stringify(o))}catch(e){toast('บันทึกในเครื่องไม่สำเร็จ')}};
-const keyGet=()=>{try{return localStorage.getItem(KK)||''}catch(e){return ''}};
-const keySet=v=>{try{localStorage.setItem(KK,v)}catch(e){}};
+const fmtDay=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'});
+const fmtHM=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:false});
+const fmtHMS=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+const fmtThai=new Intl.DateTimeFormat('th-TH',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const fmtThaiShort=new Intl.DateTimeFormat('th-TH',{timeZone:TZ,day:'numeric',month:'short',year:'2-digit'});
+const dayKey=(d=new Date())=>fmtDay.format(d);
+const hm=ms=>fmtHM.format(ms);
+const keyDate=k=>new Date(k+'T12:00:00+07:00');
+const minOfDay=ms=>{const [h,m]=hm(ms).split(':').map(Number);return h*60+m};
+const parseHM=s=>{const m=/^(\d{1,2}):(\d{2})/.exec(s||'');return m?(+m[1])*60+(+m[2]):540};
+function hash(s){let h=2166136261;for(const c of String(s)){h^=c.codePointAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+const PALETTE=[['#fbcfe8','#f9a8d4'],['#fed7aa','#fdba74'],['#fef08a','#fde047'],['#bbf7d0','#86efac'],['#bae6fd','#7dd3fc'],['#c7d2fe','#a5b4fc'],['#e9d5ff','#d8b4fe']];
+function avatar(name,big){
+  const n=String(name||'?').trim().replace(/^(นาย|นางสาว|นาง|น\.ส\.|ด\.ช\.|ด\.ญ\.|mr\.?|mrs\.?|ms\.?|miss)\s*/i,'');
+  const ch=(n.replace(/^[เแโใไ\s]+/,'')[0]||'?').toUpperCase();
+  const p=PALETTE[parseInt(hash(name),36)%PALETTE.length];
+  return `<div class="av${big?' big':''}" style="background:linear-gradient(135deg,${p[0]},${p[1]})">${esc(ch)}</div>`;
+}
+const ICON={
+  check:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  pen:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  x:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  clock:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  users:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>',
+  alarm:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M5 3L2 6M22 6l-3-3"/></svg>',
+  hourglass:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4"/></svg>',
+  file:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>',
+  copy:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  sheet:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>',
+  upload:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>'
+};
 
-let tT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2800)}
-function errMsg(e){const c=e&&(e.code||e.error);return c==='invalid_argument'?'บัญชีนี้ไม่มีสิทธิ์บันทึกข้อมูล':c==='quota_exceeded'?'พื้นที่เก็บข้อมูลเต็ม':c==='bad_key'?'รหัสผู้ดูแลไม่ถูกต้อง ใส่ใหม่ที่ปุ่มตั้งค่า':c==='net'?'เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองอีกครั้ง':'บันทึกไม่สำเร็จ ลองอีกครั้ง'}
+/* ---------------- state ---------------- */
+const state={students:[],checkins:{},config:{startTime:'09:00',grace:15,title:'Claude AI'},date:dayKey(),filter:'all',q:'',
+  isAdmin:false,canWrite:true,myId:null,mode:'loading',loaded:false,slow:false,readOnlyReason:''};
+let store=null,unsubCheckins=null,loadTimer=null,user=null,downloads=null;
 
-function initials(n){n=String(n).replace(/^(นางสาว|นาย|นาง|น\.ส\.|คุณ|ดร\.|mr\.?|mrs\.?|ms\.?|dr\.?)\s*/i,'').trim();const c=[...n];if(!c.length)return '?';return /[เแโใไ]/.test(c[0])?c.slice(0,2).join(''):c[0].toUpperCase()}
-function status(r){if(!r)return null;const t=new Date(r.t);const [h,m]=String(S.cls.start||'09:00').split(':').map(Number);const st=new Date(S.date+'T00:00');st.setHours(h||0,m||0,0,0);const min=Math.floor((t-st)/60000);return min>(+S.cls.grace||0)?{late:true,min,txt:'สาย '+min+' นาที'}:{late:false,min:Math.max(0,min),txt:'ตรงเวลา'}}
-function hl(text,q){const t=String(text||'');if(!q)return esc(t);const i=t.toLowerCase().indexOf(q.toLowerCase());if(i<0)return esc(t);return esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+q.length))+'</mark>'+esc(t.slice(i+q.length))}
-
-/* ---------- cute mascots (original SVG, made for this page) ---------- */
-const INK='#173a2a';
-function face(m){
- const eyes=m==='joy'?`<path d="M57 82q7-9 14 0M89 82q7-9 14 0" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>`
-  :m==='sleep'?`<path d="M57 82q7 6 14 0M89 82q7 6 14 0" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>`
-  :`<ellipse cx="64" cy="81" rx="6.5" ry="7.5" fill="${INK}"/><ellipse cx="96" cy="81" rx="6.5" ry="7.5" fill="${INK}"/><circle cx="66.5" cy="78" r="2.4" fill="#fff"/><circle cx="98.5" cy="78" r="2.4" fill="#fff"/>`;
- const mouth=m==='joy'?`<path d="M70 94q10 15 20 0z" fill="${INK}"/><path d="M74.5 99.5q5.5 5 11 0" fill="#ff8fa3"/>`
-  :m==='sleep'?`<ellipse cx="80" cy="98" rx="4" ry="3.2" fill="${INK}"/>`
-  :m==='think'?`<path d="M73 99q7-5 14 0" stroke="${INK}" stroke-width="3.6" fill="none" stroke-linecap="round"/>`
-  :`<path d="M72 94q8 9 16 0" stroke="${INK}" stroke-width="3.8" fill="none" stroke-linecap="round"/>`;
- return eyes+mouth+`<ellipse cx="53" cy="95" rx="7.5" ry="4.8" fill="#ffb3c1" opacity=".85"/><ellipse cx="107" cy="95" rx="7.5" ry="4.8" fill="#ffb3c1" opacity=".85"/>`}
-function board(m){
- const arms=m==='joy'?`<path d="M32 96q-22-10-18-36M128 96q22-10 18-36" stroke="#17a957" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="14" cy="58" r="7" fill="#17a957"/><circle cx="146" cy="58" r="7" fill="#17a957"/>`
-  :m==='sleep'?`<path d="M32 112q-10 8-6 18M128 112q10 8 6 18" stroke="#17a957" stroke-width="9" fill="none" stroke-linecap="round"/>`
-  :m==='think'?`<path d="M32 108q-14 6-10 22M128 104q18-4 16-24" stroke="#17a957" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="144" cy="78" r="7" fill="#17a957"/>`
-  :`<path d="M32 104q-20-2-18-26" stroke="#17a957" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="14" cy="76" r="7" fill="#17a957"/><path d="M128 108q14 4 18 16" stroke="#17a957" stroke-width="9" fill="none" stroke-linecap="round"/>`;
- return `<ellipse cx="80" cy="162" rx="48" ry="7" fill="#cdeedb"/>${arms}
- <rect x="30" y="28" width="100" height="126" rx="22" fill="#17a957"/><rect x="30" y="28" width="100" height="126" rx="22" fill="url(#gl)"/>
- <rect x="40" y="42" width="80" height="102" rx="14" fill="#fff"/>
- <rect x="56" y="17" width="48" height="24" rx="11" fill="#0d7a3e"/><circle cx="80" cy="24" r="5" fill="#eaf8f0"/>
- ${face(m)}
- <rect x="54" y="114" width="52" height="6" rx="3" fill="#d6f3e2"/><rect x="54" y="126" width="34" height="6" rx="3" fill="#d6f3e2"/>
- <circle cx="104" cy="129" r="8" fill="#17a957"/><path d="M100 129l3 3 5-6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`}
-const star=(x,y,s,c)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M0-10C1.5-2 2-1.5 10 0 2 1.5 1.5 2 0 10-1.5 2-2 1.5-10 0-2-1.5-1.5-2 0-10z" fill="${c}"/>`;
-function pencil(){return `<g transform="translate(160 66) rotate(14)">
- <ellipse cx="13" cy="104" rx="18" ry="4" fill="#cdeedb" transform="rotate(-14 13 104)"/>
- <path d="M0 76h26l-13 22z" fill="#f7d3b0"/><path d="M8.5 90.5h9l-4.5 7.5z" fill="${INK}"/>
- <rect x="0" y="6" width="26" height="72" rx="6" fill="#ffd66b"/><rect x="0" y="6" width="9" height="72" rx="4" fill="#ffe7a3"/>
- <rect x="-1" y="-6" width="28" height="14" rx="5" fill="#ff9fb2"/><rect x="-1" y="4" width="28" height="6" fill="#bfe6cf"/>
- <circle cx="8" cy="34" r="3.2" fill="${INK}"/><circle cx="18" cy="34" r="3.2" fill="${INK}"/><circle cx="9" cy="33" r="1" fill="#fff"/><circle cx="19" cy="33" r="1" fill="#fff"/>
- <path d="M10 41q3 3.5 6 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>
- <ellipse cx="4.5" cy="40" rx="3" ry="2" fill="#ffb3c1"/><ellipse cx="21.5" cy="40" rx="3" ry="2" fill="#ffb3c1"/></g>`}
-const DEFS='<defs><linearGradient id="gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>';
-function mascot(m){
- if(m==='hero')return `<svg viewBox="0 -6 210 180">${DEFS}${board('happy')}${pencil()}${star(150,30,1,'#c6f06b')}${star(196,48,.6,'#ffd66b')}${star(18,32,.7,'#ffd66b')}</svg>`;
- const extra=m==='joy'?star(20,28,1,'#ffd66b')+star(142,22,.8,'#c6f06b')+star(150,110,.6,'#ff9fb2')+'<circle cx="8" cy="110" r="4" fill="#ff9fb2"/><circle cx="154" cy="140" r="4" fill="#ffd66b"/><rect x="134" y="44" width="8" height="8" rx="2" fill="#7ad3a0" transform="rotate(20 138 48)"/><rect x="16" y="140" width="8" height="8" rx="2" fill="#c6f06b" transform="rotate(-20 20 144)"/>'
-  :m==='sleep'?`<text x="122" y="30" font-size="20" font-weight="700" fill="#9cc1ad" font-family="system-ui">z</text><text x="138" y="14" font-size="14" font-weight="700" fill="#bfe6cf" font-family="system-ui">z</text>`
-  :m==='think'?`<circle cx="140" cy="30" r="15" fill="#fff" stroke="#d6f3e2" stroke-width="3"/><text x="140" y="37" text-anchor="middle" font-size="20" font-weight="700" fill="#17a957" font-family="system-ui">?</text>`:'';
- return `<svg viewBox="0 -6 160 176">${DEFS}${board(m)}${extra}</svg>`}
-document.querySelectorAll('[data-m]').forEach(el=>{el.innerHTML=mascot(el.dataset.m)});
-
-function render(){
- const P=S.cls.people||[],ck=S.checks;
- const done=P.filter(p=>ck[p.id]),late=done.filter(p=>status(ck[p.id]).late);
- $('#ttl').innerHTML=esc(S.cls.title||'Claude AI').replace(/^(claude)/i,'<span>$1</span>');
- $('#dline').textContent=thDate(S.date)+' · เริ่มเรียน '+(S.cls.start||'09:00')+' น.';
- $('#arc').style.strokeDashoffset=314.2*(1-(P.length?done.length/P.length:0));
- $('#rnum').textContent=done.length;$('#rtot').textContent='จาก '+P.length+' คน';
- $('#cAll').textContent=P.length;$('#cIn').textContent=done.length;$('#cOut').textContent=P.length-done.length;$('#cLate').textContent=late.length;
- $('#sampleNote').hidden=!(S.cls.sample&&S.admin);
- const raw=S.q.trim(),q=norm(raw);
- const rows=P.map((p,i)=>({p,n:i+1})).filter(({p})=>{const r=ck[p.id];
-  if(S.filter==='in'&&!r)return false;if(S.filter==='out'&&r)return false;if(S.filter==='late'&&!(r&&status(r).late))return false;
-  return !q||norm(p.name+'|'+(p.en||'')+'|'+(p.org||'')).includes(q)});
- const one=q&&rows.length===1;
- $('#list').innerHTML=rows.map(({p,n})=>{const r=ck[p.id],s=status(r);
-  const sub=(p.en&&raw&&norm(p.en).includes(q)?hl(p.en,raw)+' · ':'')+(p.org?hl(p.org,raw):'#'+n);
-  return `<li class="p${r?' ok':''}${one?' one':''}" data-id="${esc(p.id)}" tabindex="0" role="button" aria-label="${esc(p.name)} ${r?'มาแล้ว '+hm(new Date(r.t)):'แตะเพื่อเซ็นชื่อ'}">
-  <span class="av" style="${avStyle(p.name)}">${r?CHECK:esc(initials(p.name))}</span>
-  <span class="who"><span class="nm">${hl(p.name,raw)}</span><span class="sub">${sub}</span></span>
-  ${r?`<span class="tm"><b>${hm(new Date(r.t))} น.</b><span class="tag${s.late?' late':''}">${s.txt}</span>${r.sig?`<img class="thumb" src="${esc(r.sig)}" alt="ลายเซ็น">`:''}</span>`:S.canWrite?`<span class="go">${PEN}<span>เซ็นชื่อ</span></span>`:'<span class="tag">ยังไม่มา</span>'}</li>`}).join('');
- $('#empty').hidden=P.length>0;$('#noMatch').hidden=!(P.length&&!rows.length);
- const qi=$('#qinfo');qi.hidden=!q;qi.textContent=q?(rows.length?`พบ ${rows.length} คน`+(one&&!ck[rows[0].p.id]?' · แตะ “เซ็นชื่อ” ได้เลย':''):''):'';
- $('#clr').hidden=!raw;$('#kbd').hidden=!!raw;
- document.body.classList.toggle('ro',!S.admin);
+/* ---------------- stores ---------------- */
+function makeLocal(){
+  const KEY='claude-ai-class-attendance-v1';
+  let data={students:{},checkins:{},config:{}};
+  try{const raw=localStorage.getItem(KEY);if(raw)data=Object.assign(data,JSON.parse(raw))}catch(e){}
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+  let cbS=null,cbC=null,cbCfg=null,cur=null;
+  const emitS=()=>cbS&&cbS(Object.entries(data.students).map(([id,v])=>({id,...v})),{fromCache:false});
+  const emitC=()=>cbC&&cbC({...(data.checkins[cur]||{})},{fromCache:false});
+  return{
+    kind:'local',
+    onStudents(cb){cbS=cb;emitS();return()=>{}},
+    onCheckins(date,cb){cur=date;cbC=cb;emitC();return()=>{cbC=null}},
+    onConfig(cb){cbCfg=cb;cb(data.config||{});return()=>{}},
+    async putStudent(id,v){data.students[id]=v;save();emitS()},
+    async delStudent(id){delete data.students[id];save();emitS()},
+    async putCheckin(date,sid,v){(data.checkins[date]=data.checkins[date]||{})[sid]=v;save();if(date===cur)emitC()},
+    async delCheckin(date,sid){if(data.checkins[date])delete data.checkins[date][sid];save();if(date===cur)emitC()},
+    async putConfig(v){data.config=v;save();cbCfg&&cbCfg(v)}
+  };
+}
+function makeRemote(db){
+  const onErr=e=>{console.warn('db',e);if(e&&e.code==='revoked'){state.canWrite=false;state.readOnlyReason='การเข้าถึงถูกเปลี่ยน กรุณาโหลดหน้าใหม่';render()}else{clearTimeout(loadTimer);state.slow=false;state.loaded=true;render()}};
+  return{
+    kind:'remote',
+    onStudents(cb){return db.collection('students').onSnapshot(s=>cb(s.docs.map(d=>({id:d.id,...d.data()})),s.metadata),onErr)},
+    onCheckins(date,cb){return db.collection('sessions/'+date+'/checkins').onSnapshot(s=>{const o={};s.docs.forEach(d=>{o[d.id]=d.data()});cb(o,s.metadata)},onErr)},
+    onConfig(cb){return db.doc('config/class').onSnapshot(d=>cb(d.exists?d.data():{}),onErr)},
+    putStudent:(id,v)=>db.doc('students/'+id).set(v),
+    delStudent:id=>db.doc('students/'+id).delete(),
+    putCheckin:(date,sid,v)=>db.doc('sessions/'+date+'/checkins/'+sid).set(v),
+    delCheckin:(date,sid)=>db.doc('sessions/'+date+'/checkins/'+sid).delete(),
+    putConfig:v=>db.doc('config/class').set(v)
+  };
+}
+function makeSheetStore(url){
+  let cbS=null,cbC=null,cbCfg=null,cur=null,timer=null,busy=false,lastS='',lastC='',lastCfg='';
+  const pin=()=>{try{return sessionStorage.getItem('attn-pin')||''}catch(e){return state._pin||''}};
+  async function pull(){
+    if(busy||!cur)return;busy=true;
+    try{
+      const r=await fetch(url+(url.includes('?')?'&':'?')+'action=state&date='+encodeURIComponent(cur)+'&t='+Date.now());
+      const j=await r.json();
+      if(j&&j.ok){
+        const sS=JSON.stringify(j.students),sC=JSON.stringify(j.checkins),sF=JSON.stringify(j.config);
+        if(sS!==lastS||!state.loaded){lastS=sS;cbS&&cbS(j.students||[],{fromCache:false})}
+        if(sC!==lastC){lastC=sC;cbC&&cbC(j.checkins||{},{fromCache:false})}
+        if(sF!==lastCfg){lastCfg=sF;cbCfg&&cbCfg(j.config||{})}
+        if(state.slow){state.slow=false;render()}
+      }
+    }catch(e){console.warn('sheet pull',e)}
+    finally{busy=false}
+  }
+  async function post(body){
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...body,pin:pin()})});
+    let j;try{j=await r.json()}catch(e){throw{code:'unavailable'}}
+    if(!j.ok)throw{code:j.error||'unavailable'};
+    lastS=lastC='';setTimeout(pull,50);
+    return j;
+  }
+  const start=()=>{clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)pull()},8000)};
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+  return{
+    kind:'sheet',
+    onStudents(cb){cbS=cb;return()=>{}},
+    onCheckins(date,cb){cur=date;cbC=cb;lastC='';pull();start();return()=>{cbC=null}},
+    onConfig(cb){cbCfg=cb;return()=>{}},
+    putStudent:(id,data)=>post({action:'putStudent',id,data}),
+    putStudents:items=>post({action:'putStudents',items}),
+    delStudent:id=>post({action:'delStudent',id}),
+    putCheckin:(date,id,data)=>post({action:'checkin',date,id,data}),
+    delCheckin:(date,id)=>post({action:'delCheckin',date,id}),
+    putConfig:data=>post({action:'putConfig',data}),
+    verify:p=>fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'verify',pin:p})}).then(r=>r.json())
+  };
+}
+async function withRetry(fn){
+  try{return await fn()}catch(e){
+    if(e&&e.code==='unavailable'){await new Promise(r=>setTimeout(r,400+Math.random()*600));return fn()}
+    throw e;
+  }
+}
+function errMsg(e){
+  const c=e&&e.code;
+  if(c==='invalid_argument'){state.canWrite=false;state.readOnlyReason='บัญชีนี้ยังไม่มีสิทธิ์บันทึก กรุณาให้ผู้สอนเพิ่มสิทธิ์';render();return 'บันทึกไม่ได้: บัญชีนี้ยังไม่มีสิทธิ์บันทึกข้อมูล'}
+  if(c==='pin'){state.isAdmin=false;try{sessionStorage.removeItem('attn-pin')}catch(_){}render();return 'รหัสผู้สอนไม่ถูกต้องหรือหมดอายุ กรุณาเข้าสู่โหมดผู้สอนใหม่'}
+  if(c==='exists')return 'รายชื่อนี้เช็คชื่อไปแล้ว';
+  if(c==='quota_exceeded')return 'พื้นที่จัดเก็บเต็ม กรุณาลบข้อมูลเก่าบางส่วน';
+  if(c==='resource_exhausted')return 'ใช้งานถี่เกินไป รอสักครู่แล้วลองใหม่';
+  return 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง';
 }
 
-/* ---------- data layer: claude db | Google Apps Script | localStorage ---------- */
-let chain=Promise.resolve();
-function serial(fn){const p=chain.then(fn);chain=p.catch(()=>{});return p}
-async function gas(body){let r;try{r=body?await fetch(CONFIG.SHEET_API,{method:'POST',body:JSON.stringify(body)}):await fetch(CONFIG.SHEET_API+(CONFIG.SHEET_API.includes('?')?'&':'?')+'action=state&date='+encodeURIComponent(S.date)+'&_='+Date.now())}catch(e){throw {error:'net'}}
- let j;try{j=await r.json()}catch(e){throw {error:'net'}}if(!j||!j.ok)throw j||{error:'unknown'};return j}
-function saveCls(next){return serial(async()=>{
- if(S.mode==='db')await S.db.doc('class/main').set(next);
- else if(S.mode==='gas')await gas({action:'saveClass',key:keyGet(),cls:next});
- else{const o=lsGet();o.cls=next;lsSet(o)}
- S.cls=next;render()})}
-function saveCheck(pid,rec){const date=S.date;return serial(async()=>{
- if(S.mode==='db'){const ref=S.db.doc(`sessions/${date}/checkins/${pid}`);rec?await ref.set(rec):await ref.delete()}
- else if(S.mode==='gas'){if(rec){const s=status(rec);await gas({action:'checkin',date,pid,rec:{...rec,time:hms(new Date(rec.t)),status:s.late?'สาย':'ตรงเวลา',late:s.late?s.min:''}})}else await gas({action:'uncheck',key:keyGet(),date,pid})}
- else{const o=lsGet();o.sessions=o.sessions||{};const d={...(o.sessions[date]||{})};rec?d[pid]=rec:delete d[pid];o.sessions[date]=d;lsSet(o)}
- if(date===S.date){const c={...S.checks};rec?c[pid]=rec:delete c[pid];S.checks=c;render()}})}
-
-function setSync(s){const el=$('#sync');el.dataset.s=s;el.querySelector('span').textContent={wait:'กำลังเชื่อมต่อ…',ok:'ซิงก์ออนไลน์',sheet:'เชื่อม Google Sheets แล้ว',slow:'ยังเชื่อมต่อไม่ได้ ข้อมูลอาจไม่ล่าสุด',err:'การเชื่อมต่อหลุด',local:'บันทึกในเครื่องนี้'}[s]||s}
-let unChk=null,loadT=null,pollT=null;
-async function pull(){if(S.mode!=='gas')return;try{const j=await gas();S.cls={...DEF,...(j.cls||{})};S.checks=j.checks||{};render();setSync('sheet')}catch(e){setSync(e&&e.error==='net'?'slow':'err')}}
-function subChecks(){
- if(unChk){unChk();unChk=null}
- if(S.mode==='gas'){pull();return}
- if(S.mode!=='db'){S.checks={...((lsGet().sessions||{})[S.date]||{})};render();return}
- S.checks={};render();
- unChk=S.db.collection(`sessions/${S.date}/checkins`).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=d.data()});S.checks=o;render()},()=>setSync('err'));
-}
-
-/* ---------- clock ---------- */
-let cur=null,strokes=0,drawing=false,last=null,doneT;
-function tick(){const d=new Date();$('#clk').textContent=hms(d);if(cur&&$('#mSign').classList.contains('on')){$('#sClk').textContent=hms(d);const s=status({t:d.toISOString()});const tg=$('#sTag');tg.textContent=S.date===ymd(d)?s.txt:'บันทึกย้อนหลัง';tg.className='tag'+(s.late?' late':'')}}
-setInterval(tick,1000);
-
-/* ---------- modals ---------- */
-const fine=matchMedia('(pointer:fine)').matches;
-function show(id){const m=$(id);m.classList.add('on');document.body.classList.add('lock');const f=m.querySelector('input:not([type=file]),button.pri');if(f&&id!=='#mSign'&&fine)setTimeout(()=>f.focus(),30)}
-function hide(m){m.classList.remove('on');if(!document.querySelector('.ov.on'))document.body.classList.remove('lock');if(m.id==='mSign'){cur=null;clearTimeout(doneT)}}
-document.querySelectorAll('.ov').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-close]'))hide(m)})});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ov.on').forEach(hide);
- if(e.key==='/'&&!e.target.closest('input,textarea')&&!document.querySelector('.ov.on')){e.preventDefault();$('#q').focus()}});
-function arm(btn,fn){const label=btn.textContent;btn.onclick=()=>{if(btn.dataset.armed){delete btn.dataset.armed;btn.textContent=label;fn()}else{btn.dataset.armed='1';btn.textContent='กดอีกครั้งเพื่อยืนยัน';setTimeout(()=>{if(btn.dataset.armed){delete btn.dataset.armed;btn.textContent=label}},3500)}}}
-
-/* ---------- signature pad ---------- */
-const cv=$('#cv'),cx=cv.getContext('2d');
-function sizePad(){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);cx.setTransform(d,0,0,d,0,0);cx.lineCap='round';cx.lineJoin='round';cx.strokeStyle=cx.fillStyle='#173a2a'}
-function clearPad(){cx.clearRect(0,0,cv.width,cv.height);strokes=0;$('#ph').hidden=false;$('#sOk').disabled=true}
-const pt=e=>{const r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top,w:1.8+(e.pressure&&e.pointerType==='pen'?e.pressure:.5)*2.4}};
-cv.addEventListener('pointerdown',e=>{e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}drawing=true;last=pt(e);cx.beginPath();cx.arc(last.x,last.y,last.w/2,0,7);cx.fill();strokes++;$('#ph').hidden=true;$('#sOk').disabled=false});
-cv.addEventListener('pointermove',e=>{if(!drawing)return;const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];for(const ev of evs){const p=pt(ev);cx.lineWidth=(last.w+p.w)/2;cx.beginPath();cx.moveTo(last.x,last.y);cx.lineTo(p.x,p.y);cx.stroke();last=p}});
-['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,()=>{drawing=false}));
-let rzT;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(!cur||!$('#mSign').classList.contains('on'))return;
- if(!strokes){sizePad();return}const t=document.createElement('canvas');t.width=cv.width;t.height=cv.height;t.getContext('2d').drawImage(cv,0,0);
- sizePad();const r=cv.getBoundingClientRect();cx.drawImage(t,0,0,r.width,r.height)},120)});
-function sigData(w=420){const r=cv.getBoundingClientRect(),h=Math.max(110,Math.round(w*r.height/Math.max(1,r.width)));const o=document.createElement('canvas');o.width=w;o.height=h;o.getContext('2d').drawImage(cv,0,0,w,h);const u=o.toDataURL('image/png');return u.length>45000&&w>240?sigData(Math.round(w*.7)):u}
-$('#sClr').onclick=clearPad;
-
-function openPerson(id){const p=(S.cls.people||[]).find(x=>x.id===id);if(!p)return;const r=S.checks[p.id];
- if(r){const s=status(r),t=new Date(r.t);$('#vAv').innerHTML=CHECK;$('#vAv').setAttribute('style','background:var(--g);color:#fff');
-  $('#vName').textContent=p.name;$('#vOrg').textContent=p.org||'';$('#vClk').textContent=hms(t)+' น.';$('#vDate').textContent='เช็คอิน '+thDate(S.date);
-  const tg=$('#vTag');tg.textContent=s.txt;tg.className='tag'+(s.late?' late':'');$('#vSig').src=r.sig||'';cur=p;show('#mView');return}
- if(!S.canWrite){toast('บัญชีนี้ดูได้อย่างเดียว');return}
- cur=p;$('#signPane').hidden=false;$('#donePane').hidden=true;$('#sAv').textContent=initials(p.name);$('#sAv').setAttribute('style',avStyle(p.name));$('#sName').textContent=p.name;$('#sOrg').textContent=p.org||'';
- show('#mSign');sizePad();clearPad();tick();setTimeout(()=>{if(cur&&!strokes)sizePad()},300);
-}
-$('#list').addEventListener('click',e=>{const li=e.target.closest('.p');if(li)openPerson(li.dataset.id)});
-$('#list').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.p')){e.preventDefault();openPerson(e.target.dataset.id)}});
-$('#sOk').onclick=async()=>{if(!cur||!strokes)return;const p=cur,rec={t:new Date().toISOString(),sig:sigData(),name:p.name,org:p.org||''};$('#sOk').disabled=true;$('#sOk').textContent='กำลังบันทึก…';
- try{await saveCheck(p.id,rec);const s=status(rec);$('#dTxt').textContent=p.name+' · '+hm(new Date(rec.t))+' น. · '+s.txt;$('#signPane').hidden=true;$('#donePane').hidden=false;
-  if(S.q){S.q='';$('#q').value='';render()}doneT=setTimeout(()=>hide($('#mSign')),2000)}
- catch(e){toast(errMsg(e));$('#sOk').disabled=false;if(e&&e.code==='invalid_argument'){S.canWrite=false;render()}}
- finally{$('#sOk').textContent='ยืนยันเช็คชื่อ'}};
-arm($('#sDel'),async()=>{const p=cur;if(!p)return;try{await saveCls({...S.cls,people:S.cls.people.filter(x=>x.id!==p.id)});hide($('#mSign'));toast('ลบ '+p.name+' แล้ว')}catch(e){toast(errMsg(e))}});
-arm($('#vUndo'),async()=>{const p=cur;if(!p)return;try{await saveCheck(p.id,null);hide($('#mView'));toast('ยกเลิกการเช็คชื่อของ '+p.name+' แล้ว')}catch(e){toast(errMsg(e))}});
-
-/* ---------- search, filters, toolbar ---------- */
-$('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
-$('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){const f=$('#list .p');if(f&&S.q.trim()&&document.querySelectorAll('#list .p').length===1)openPerson(f.dataset.id)}});
-$('#clr').onclick=()=>{S.q='';$('#q').value='';render();$('#q').focus()};
-$('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;S.filter=b.dataset.f;document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c===b));render()});
-$('#date').value=S.date;$('#date').addEventListener('change',e=>{if(!e.target.value)return;S.date=e.target.value;subChecks()});
-const openImp=()=>{$('#iPrev').hidden=true;$('#paste').value='';show('#mImp')};
-const openAdd=()=>{['#aName','#aEn','#aOrg'].forEach(s=>$(s).value='');show('#mAdd')};
-$('#bImp').onclick=openImp;$('#bAdd').onclick=openAdd;
-document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>b.dataset.open==='imp'?openImp():openAdd());
-$('#bSet').onclick=()=>{$('#tTitle').value=S.cls.title||'';$('#tStart').value=S.cls.start||'09:00';$('#tGrace').value=S.cls.grace??15;$('#tKeyRow').hidden=S.mode!=='gas';$('#tKey').value=keyGet();show('#mSet')};
-$('#fSet').addEventListener('submit',async e=>{e.preventDefault();if(S.mode==='gas')keySet($('#tKey').value.trim());
- try{await saveCls({...S.cls,title:$('#tTitle').value.trim()||'Claude AI',start:$('#tStart').value||'09:00',grace:Math.max(0,+$('#tGrace').value||0)});hide($('#mSet'));toast('บันทึกการตั้งค่าแล้ว')}catch(er){toast(errMsg(er))}});
-arm($('#tClear'),async()=>{try{await saveCls({...S.cls,people:[],sample:false});hide($('#mSet'));toast('ล้างรายชื่อแล้ว')}catch(e){toast(errMsg(e))}});
-$('#fAdd').addEventListener('submit',async e=>{e.preventDefault();const name=$('#aName').value.replace(/\s+/g,' ').trim();if(!name)return;
- if(S.cls.people.some(p=>p.name===name)){toast('มีชื่อนี้อยู่แล้ว');return}
- try{await saveCls({...S.cls,people:[...S.cls.people,{id:uid(),name,en:$('#aEn').value.trim(),org:$('#aOrg').value.trim()}]});hide($('#mAdd'));toast('เพิ่ม '+name+' แล้ว')}catch(er){toast(errMsg(er))}});
-
-/* ---------- import (CSV / Excel / Google Form export) ---------- */
-function parseCSV(t){t=t.replace(/^﻿/,'');const f0=(t.split(/\r?\n/)[0]||'');const n=c=>f0.split(c).length;const d=n('\t')>n(',')?'\t':n(';')>n(',')?';':',';
- const rows=[];let row=[],f='',q=false;
- for(let i=0;i<t.length;i++){const c=t[i];
-  if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
-  else if(c==='"'&&f==='')q=true;else if(c===d){row.push(f);f=''}
-  else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f=''}else f+=c}
- if(f||row.length){row.push(f);rows.push(row)}
- return rows.filter(r=>r.some(x=>String(x).trim()))}
-function mapRows(rows){if(!rows.length)return [];
- const h=rows[0].map(x=>String(x).trim().toLowerCase().replace(/\s+/g,' '));const fi=re=>h.findIndex(x=>re.test(x));
- let full=fi(/ชื่อ\s*-?\s*(นาม)?สกุล|full ?name|^name$|^ชื่อผู้|^รายชื่อ|ชื่อ-สกุล/);
- const first=fi(/^(ชื่อ|ชื่อจริง|first ?name|first)$/),last=fi(/^(นามสกุล|last ?name|surname|last)$/);
- const en=fi(/^(name ?- ?surname|english name|name \(en\)|ชื่อภาษาอังกฤษ|ชื่อ-นามสกุล \(ภาษาอังกฤษ\))$/);
- let org=fi(/บริษัท|หน่วยงาน|องค์กร|สังกัด|สถาบัน|โรงเรียน|มหาวิทยาลัย|^org|company/);
- const head=full>-1||first>-1;const body=head?rows.slice(1):rows;
- if(!head){org=-1;full=0;const w=Math.max(...rows.map(r=>r.length));for(let c=0;c<w;c++){if(body.some(r=>{const v=String(r[c]??'').trim();return v&&isNaN(+v)})){full=c;break}}}
- const g=(r,i)=>i>-1?String(r[i]??'').trim():'';
- const extra=head?h.map((x,i)=>/^(ชื่อ\s*-?\s*(นาม)?สกุล|full ?name|name)\s*\(?\s*(คนที่)?\s*\d+\s*\)?$/.test(x)&&i!==full?i:-1).filter(i=>i>-1):[];
- const clean=n=>n.replace(/\s+/g,' ').trim().replace(/^(นางสาว|นาย|นาง|น\.ส\.|ดร\.|คุณ|mr\.?|mrs\.?|ms\.?|miss|dr\.?)\s*/i,'').trim();
- return body.flatMap(r=>{let name=full>-1?g(r,full):'';if(!name&&(first>-1||last>-1))name=(g(r,first)+' '+g(r,last)).trim();const o=g(r,org);
-  return [{name,en:clean(g(r,en))},...extra.map(i=>({name:g(r,i),en:''}))].map(x=>({name:clean(x.name),en:x.en,org:o}))}).filter(p=>p.name&&p.name!=='-')}
-let pending=[];
-function preview(list,src){pending=list;if(!list.length){toast('ไม่พบรายชื่อในข้อมูลนี้');return}
- $('#iRows').innerHTML=list.slice(0,6).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${esc(p.org)}</td></tr>`).join('')+(list.length>6?`<tr><td></td><td colspan="2" class="sub">และอีก ${list.length-6} คน</td></tr>`:'');
- $('#iInfo').textContent=`พบ ${list.length} รายการ จาก ${src} (ชื่อซ้ำจะถูกรวมให้)${S.cls.people.length?` · ตอนนี้มีอยู่ ${S.cls.people.length} คน การเช็คชื่อเดิมไม่หาย`:''}`;
- $('#iPrev').hidden=false;$('#iRep').focus()}
-async function readFile(f){try{let rows;
-  if(/\.xlsx?$/i.test(f.name)){if(!window.XLSX)throw new Error('ตัวอ่าน Excel ยังโหลดไม่เสร็จ ลองอีกครั้ง');const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:false})}
-  else{const buf=await f.arrayBuffer();let t;try{t=new TextDecoder('utf-8',{fatal:true}).decode(buf)}catch(_){t=new TextDecoder('windows-874').decode(buf)}rows=parseCSV(t)}
-  preview(mapRows(rows),f.name)}catch(e){toast('อ่านไฟล์ไม่ได้: '+(e.message||e))}}
-$('#file').addEventListener('change',e=>{const f=e.target.files[0];if(f)readFile(f);e.target.value=''});
-const drop=$('label.drop');['dragover','dragenter'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.style.borderColor='var(--g)'}));
-drop.addEventListener('dragleave',()=>drop.style.borderColor='');drop.addEventListener('drop',e=>{e.preventDefault();drop.style.borderColor='';const f=e.dataTransfer.files[0];if(f)readFile(f)});
-$('#iPaste').onclick=()=>{const t=$('#paste').value;if(t.trim())preview(mapRows(parseCSV(t)),'ข้อความที่วาง')};
-function merge(list,base){const by=new Map(base.map(p=>[p.name,p]));const seen=new Map();const out=[];
- for(const p of list){if(seen.has(p.name)){const o=seen.get(p.name);if(!o.en&&p.en)o.en=p.en;continue}const b=by.get(p.name);const o={id:b?b.id:uid(),name:p.name,en:p.en||(b&&b.en)||'',org:p.org||(b&&b.org)||''};seen.set(p.name,o);out.push(o)}return out}
-$('#iRep').onclick=async()=>{const people=merge(pending,S.cls.people);try{await saveCls({...S.cls,people,sample:false});hide($('#mImp'));toast('นำเข้า '+people.length+' คนแล้ว')}catch(e){toast(errMsg(e))}};
-$('#iApp').onclick=async()=>{const have=new Set(S.cls.people.map(p=>p.name));const add=merge(pending.filter(p=>!have.has(p.name)),[]);
- try{await saveCls({...S.cls,people:[...S.cls.people,...add]});hide($('#mImp'));toast('เพิ่ม '+add.length+' คน')}catch(e){toast(errMsg(e))}};
-
-/* ---------- export ---------- */
-const HEAD=['ลำดับ','ชื่อ-นามสกุล','ชื่อภาษาอังกฤษ','หน่วยงาน','สถานะ','เวลาเช็คอิน','สาย (นาที)','วันที่','คลาส'];
-const tableRows=()=>S.cls.people.map((p,i)=>{const r=S.checks[p.id],s=status(r);return [i+1,p.name,p.en||'',p.org||'',r?(s.late?'สาย':'มาแล้ว'):'ยังไม่มา',r?hms(new Date(r.t)):'',r&&s.late?s.min:'',S.date,S.cls.title]});
-const csvCell=c=>{c=String(c);return /[",\r\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c};
-async function saveFile(filename,data){
- if(S.dl){try{await S.dl.save({filename,data});toast('บันทึกไฟล์แล้ว')}catch(e){if(e&&e.code!=='declined')toast('ดาวน์โหลดไม่ได้ในหน้านี้')}return}
- try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}catch(e){toast('ดาวน์โหลดไม่ได้ในหน้านี้')}}
-const slug=()=>(S.cls.title||'class').replace(/[^\w฀-๿]+/g,'-').replace(/^-|-$/g,'').toLowerCase();
-$('#bExp').onclick=()=>{const n=S.cls.people.length,d=S.cls.people.filter(p=>S.checks[p.id]).length;$('#eSub').textContent=`${S.cls.title} · ${thDate(S.date)} · มาแล้ว ${d} จาก ${n} คน`;$('#eBox').hidden=true;show('#mExp')};
-$('#eCsv').onclick=()=>saveFile(`attendance-${slug()}-${S.date}.csv`,'﻿'+[HEAD,...tableRows()].map(r=>r.map(csvCell).join(',')).join('\r\n'));
-$('#eSheet').onclick=()=>{const rows=S.cls.people.map((p,i)=>{const r=S.checks[p.id],s=status(r);return `<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${esc(p.org)}</td><td>${r?hms(new Date(r.t)):'-'}</td><td>${r?esc(s.txt):'ยังไม่มา'}</td><td>${r&&r.sig?`<img src="${esc(r.sig)}" alt="">`:''}</td></tr>`}).join('');
- const html=`<!DOCTYPE html><html lang="th"><head><meta charset="utf-8"><title>ใบเซ็นชื่อ ${esc(S.cls.title)} ${S.date}</title><style>body{font-family:Tahoma,sans-serif;margin:32px;color:#173a2a}h1{margin:0;color:#0d7a3e}p{margin:4px 0 18px;color:#555}table{width:100%;border-collapse:collapse}th,td{border:1px solid #c6e6d2;padding:6px 10px;text-align:left;font-size:14px}th{background:#eaf8f0}td img{height:44px;max-width:180px}tr{page-break-inside:avoid}footer{margin-top:18px;font-size:12px;color:#777}</style></head><body><h1>ใบเซ็นชื่อเข้าเรียน: ${esc(S.cls.title)}</h1><p>${esc(thDate(S.date))} · เริ่มเรียน ${esc(S.cls.start)} น. · มาแล้ว ${S.cls.people.filter(p=>S.checks[p.id]).length} จาก ${S.cls.people.length} คน</p><table><thead><tr><th>#</th><th>ชื่อ-นามสกุล</th><th>หน่วยงาน</th><th>เวลา</th><th>สถานะ</th><th>ลายเซ็น</th></tr></thead><tbody>${rows}</tbody></table><footer>Made by TESR · TESR Academy</footer></body></html>`;
- saveFile(`signin-sheet-${slug()}-${S.date}.html`,html)};
-$('#eCopy').onclick=async()=>{const tsv=[HEAD,...tableRows()].map(r=>r.map(c=>String(c).replace(/[\t\r\n]+/g,' ')).join('\t')).join('\n');
- try{await navigator.clipboard.writeText(tsv);toast('คัดลอกแล้ว ไปวางใน Google Sheets ได้เลย')}catch(e){const b=$('#eBox');b.value=tsv;b.hidden=false;b.focus();b.select();toast('กด Ctrl/Cmd + C เพื่อคัดลอก')}};
-$('#iTpl').onclick=()=>saveFile('attendees-template.csv','﻿ลำดับ,ชื่อ-นามสกุล,Name-Surname,หน่วยงาน\r\n1,สมชาย ใจดี,Somchai Jaidee,บริษัท ตัวอย่าง จำกัด\r\n2,กมลวรรณ ศรีสุข,Kamonwan Srisuk,มหาวิทยาลัยตัวอย่าง\r\n');
-
-/* ---------- start ---------- */
-tick();render();
-(async()=>{
- let db=null,user=null;
- if(window.claude&&typeof window.claude.use==='function'){
-  setSync('wait');loadT=setTimeout(()=>setSync('slow'),10000);
-  try{[db,user,S.dl]=await Promise.all([claude.use('db'),claude.use('user'),claude.use('downloads')])}catch(e){}
- }
- if(db){
-  S.mode='db';S.db=db;
-  if(user){try{const w=await Promise.resolve(user.can?user.can('data.write'):null);if(w===false){S.canWrite=false;S.admin=false}}catch(e){}
-   try{const a=await Promise.resolve(user.canEdit?user.canEdit():null);if(a===false)S.admin=false}catch(e){}}
+/* ---------------- init ---------------- */
+async function init(){
+  $('#date').value=state.date;
+  tick();setInterval(tick,1000);
   render();
-  db.doc('class/main').onSnapshot(d=>{S.cls=d.exists?{...DEF,...d.data()}:{...DEF};render();if(!d.metadata.fromCache){clearTimeout(loadT);setSync('ok')}},()=>{clearTimeout(loadT);setSync('err')});
-  subChecks();return}
- clearTimeout(loadT);
- if(CONFIG.SHEET_API){
-  S.mode='gas';const adm=()=>{S.admin=location.hash==='#admin';render()};adm();window.addEventListener('hashchange',adm);
-  setSync('wait');await pull();
-  pollT=setInterval(()=>{if(!document.hidden&&!$('#mSign').classList.contains('on'))pull()},CONFIG.POLL_MS||15000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});return}
- S.mode='local';const o=lsGet();if(o.cls)S.cls={...DEF,...o.cls};setSync('local');subChecks();
-})();
+  let db=null;
+  if(window.claude&&typeof window.claude.use==='function'){
+    try{[db,user,downloads]=await Promise.all([claude.use('db'),claude.use('user'),claude.use('downloads')])}catch(e){}
+  }
+  if(db){
+    store=makeRemote(db);state.mode='remote';
+    if(user){
+      try{state.isAdmin=await user.isOwner()}catch(e){}
+      try{const cw=await user.can('data.write');state.canWrite=cw!==false;if(cw===false)state.readOnlyReason='คุณเปิดดูได้อย่างเดียว ขอสิทธิ์ผู้แก้ไขจากผู้สอนเพื่อเช็คชื่อ'}catch(e){}
+      try{state.myId=await user.id()}catch(e){}
+    }
+  }else if(SHEET_API_URL){
+    store=makeSheetStore(SHEET_API_URL);state.mode='sheet';state.canWrite=true;
+    try{const p=sessionStorage.getItem('attn-pin');if(p){state.isAdmin=true}}catch(e){}
+  }else{
+    store=makeLocal();state.mode='local';state.isAdmin=true;state.canWrite=true;
+  }
+  loadTimer=setTimeout(()=>{if(!state.loaded){state.slow=true;render()}},10000);
+  store.onStudents((list,meta)=>{
+    state.students=list;state.loaded=true;
+    if(!meta||!meta.fromCache){clearTimeout(loadTimer);state.slow=false}
+    render();
+  });
+  store.onConfig(c=>{state.config=Object.assign({startTime:'09:00',grace:15,title:'Claude AI'},c||{});render()});
+  subCheckins();
 }
+function subCheckins(){
+  if(unsubCheckins){try{unsubCheckins()}catch(e){}}
+  state.checkins={};
+  unsubCheckins=store.onCheckins(state.date,o=>{state.checkins=o||{};render();refreshOpenModal()});
+}
+
+/* ---------------- clock ---------------- */
+function tick(){
+  const now=Date.now();
+  $('#clock').textContent=fmtHMS.format(now);
+  $('#today').textContent=fmtThai.format(now);
+  const lt=document.getElementById('liveT');
+  if(lt){lt.textContent=fmtHMS.format(now);const lh=document.getElementById('liveHint');if(lh)lh.outerHTML=lateChip(now,'liveHint')}
+  if(state.date!==dayKey()&&state._wasToday){state._wasToday=false;render()}
+}
+
+/* ---------------- logic ---------------- */
+function lateInfo(ms){
+  const start=parseHM(state.config.startTime),grace=+state.config.grace||0;
+  const m=minOfDay(ms);
+  return{late:m>start+grace,mins:Math.max(0,m-start)};
+}
+function lateChip(ms,id){
+  const li=lateInfo(ms);
+  const idA=id?` id="${id}"`:'';
+  return li.late?`<span class="chip late"${idA}>สาย ${li.mins} นาที</span>`:`<span class="chip ok"${idA}>${ICON.check} ตรงเวลา</span>`;
+}
+function sorted(){
+  return state.students.slice().sort((a,b)=>{
+    const ao=a.order??1e15,bo=b.order??1e15;
+    if(ao!==bo)return ao-bo;
+    return String(a.code||a.name).localeCompare(String(b.code||b.name),'th',{numeric:true});
+  });
+}
+function statusOf(s){
+  const c=state.checkins[s.id];
+  if(!c)return 'wait';
+  return lateInfo(c.time).late?'late':'done';
+}
+const isToday=()=>state.date===dayKey();
+const canCheckIn=()=>state.canWrite&&(isToday()||state.isAdmin);
+
+/* ---------------- render ---------------- */
+function render(){
+  state._wasToday=isToday();
+  const total=state.students.length;
+  let present=0,late=0;
+  for(const s of state.students){const st=statusOf(s);if(st!=='wait'){present++;if(st==='late')late++}}
+  const pct=total?Math.round(present/total*100):0;
+  const C=2*Math.PI*26;
+  $('#stats').innerHTML=`
+    <div class="stat"><div class="ring"><svg width="62" height="62"><circle cx="31" cy="31" r="26" stroke="#f1eef8" stroke-width="7" fill="none"/><circle cx="31" cy="31" r="26" stroke="url(#gg)" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" style="transition:stroke-dashoffset .6s"/><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#f9a8d4"/><stop offset=".5" stop-color="#fcd34d"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs></svg><span>${pct}%</span></div><div><div class="n">${present}<span style="font-size:16px;color:var(--mute);font-weight:500"> / ${total}</span></div><div class="l">เช็คชื่อแล้ว</div></div></div>
+    <div class="stat"><div class="ic" style="background:var(--g100);color:var(--g700)">${ICON.users}</div><div><div class="n">${present-late}</div><div class="l">มาตรงเวลา</div></div></div>
+    <div class="stat"><div class="ic" style="background:var(--amber100);color:#b45309">${ICON.alarm}</div><div><div class="n">${late}</div><div class="l">มาสาย</div></div></div>
+    <div class="stat"><div class="ic" style="background:#eef2f0;color:#5b6b63">${ICON.hourglass}</div><div><div class="n">${total-present}</div><div class="l">ยังไม่เช็คชื่อ</div></div></div>`;
+
+  $('#pillStart').textContent=`🕘 เริ่มเรียน ${state.config.startTime} น. · สายหลัง ${state.config.grace} นาที`;
+  $('#pillDate').textContent='📅 '+(isToday()?'วันนี้':fmtThaiShort.format(keyDate(state.date)));
+  $('#pillMode').textContent=state.mode==='remote'||state.mode==='sheet'?'● ออนไลน์ · ซิงก์ทุกเครื่อง':state.mode==='local'?'● โหมดเครื่องนี้':'● กำลังเชื่อมต่อ…';
+  $('#adminBar').classList.toggle('hide',!state.isAdmin);
+  $('#bLogin').classList.toggle('hide',!(state.mode==='sheet'&&!state.isAdmin));
+
+  let b='';
+  if(state.mode==='local')b+=`<div class="banner info">💡 <div>กำลังใช้งานแบบ <b>บันทึกในเครื่องนี้</b> (เหมาะกับวางแท็บเล็ตไว้หน้าห้องให้ผู้เรียนเซ็นต่อกัน) — เชื่อม Google Sheet เพื่อซิงก์ทุกเครื่องได้ (ดูคู่มือ README)</div></div>`;
+  if(state.mode==='remote'&&!state.canWrite)b+=`<div class="banner warn">🔒 <div>${esc(state.readOnlyReason||'คุณเปิดดูได้อย่างเดียว')}</div></div>`;
+  if(state.slow)b+=`<div class="banner warn">⏳ <div>กำลังเชื่อมต่อฐานข้อมูล… ข้อมูลอาจยังไม่อัปเดต</div></div>`;
+  if(!isToday())b+=`<div class="banner info">📅 <div>กำลังดูข้อมูลวันที่ <b>${esc(fmtThai.format(keyDate(state.date)))}</b> ${state.isAdmin?'— ผู้สอนเช็คชื่อย้อนหลังได้':'(ดูอย่างเดียว)'} · <a href="#" id="goToday" style="color:var(--g700);font-weight:600">กลับไปวันนี้</a></div></div>`;
+  $('#banners').innerHTML=b;
+  const gt=document.getElementById('goToday');if(gt)gt.onclick=e=>{e.preventDefault();setDate(dayKey())};
+
+  const L=$('#list');
+  if(!state.loaded){L.innerHTML=Array.from({length:6},()=>'<div class="skeleton"></div>').join('');$('#listCount').textContent='';return}
+  if(!total){
+    L.innerHTML=`<div class="empty" style="grid-column:1/-1">
+      <svg width="74" height="74" viewBox="0 0 80 80" fill="none"><rect x="14" y="10" width="52" height="62" rx="12" fill="#f3eeff"/><rect x="24" y="24" width="32" height="5" rx="2.5" fill="#f9a8d4"/><rect x="24" y="36" width="24" height="5" rx="2.5" fill="#fcd34d"/><rect x="24" y="48" width="28" height="5" rx="2.5" fill="#7dd3fc"/><circle cx="60" cy="60" r="13" fill="#a78bfa"/><path d="M60 54v12M54 60h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+      <h3>ยังไม่มีรายชื่อผู้เข้าเรียน</h3>
+      <p>${state.isAdmin?'นำเข้ารายชื่อจากไฟล์ CSV หรือ Excel ได้เลย หรือเพิ่มทีละคนก็ได้':'ผู้สอนยังไม่ได้เพิ่มรายชื่อ กรุณารอสักครู่'}</p>
+      ${state.isAdmin?'<button class="btn primary" id="emptyImport">นำเข้ารายชื่อ (CSV / Excel)</button>':''}
+    </div>`;
+    const ei=document.getElementById('emptyImport');if(ei)ei.onclick=openImport;
+    $('#listCount').textContent='';
+    return;
+  }
+  const q=state.q.trim().toLowerCase();
+  const rows=sorted().filter(s=>{
+    const st=statusOf(s);
+    if(state.filter==='wait'&&st!=='wait')return false;
+    if(state.filter==='done'&&st==='wait')return false;
+    if(state.filter==='late'&&st!=='late')return false;
+    if(q&&!(`${s.name} ${s.code||''} ${s.nickname||''} ${s.org||''}`.toLowerCase().includes(q)))return false;
+    return true;
+  });
+  $('#listCount').textContent=`แสดง ${rows.length} จาก ${total} คน`;
+  if(!rows.length){L.innerHTML=`<div class="empty" style="grid-column:1/-1;padding:32px"><h3 style="margin-top:0">ไม่พบรายชื่อ</h3><p style="margin:0">ลองเปลี่ยนคำค้นหาหรือตัวกรอง</p></div>`;return}
+  L.innerHTML=rows.map(s=>{
+    const c=state.checkins[s.id];const st=statusOf(s);
+    const sub=[s.code?`<span>รหัส ${esc(s.code)}</span>`:'',s.nickname?`<span>(${esc(s.nickname)})</span>`:'',s.org?`<span class="org">${esc(s.org)}</span>`:''].join('');
+    let right,chip;
+    if(c){
+      chip=lateChip(c.time);
+      right=`${c.sig?`<img class="sigthumb" alt="ลายเซ็น" src="${esc(c.sig)}">`:''}<span class="timebig">${hm(c.time)}</span>`;
+    }else{
+      chip='<span class="chip wait">รอเช็คชื่อ</span>';
+      right=canCheckIn()?`<span class="cta">${ICON.pen} เช็คชื่อ</span>`:'';
+    }
+    return `<button class="card ${st==='wait'?'':st}" data-id="${esc(s.id)}">${avatar(s.name)}<div class="who"><div class="nm">${esc(s.name)}</div><div class="sub">${sub}${chip}</div></div><div class="right">${right}</div></button>`;
+  }).join('');
+}
+
+/* ---------------- modal infra ---------------- */
+let modalCtx=null;
+function openModal(html,{wide=false,onClose}={}){
+  closeModal(true);
+  const root=$('#modalRoot');
+  root.innerHTML=`<div class="overlay" id="ov"><div class="sheet${wide?' wide':''}" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`;
+  const ov=$('#ov');
+  ov.addEventListener('mousedown',e=>{if(e.target===ov)closeModal()});
+  root.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal());
+  document.body.style.overflow='hidden';
+  modalCtx={onClose};
+  return ov;
+}
+function closeModal(silent){
+  const root=$('#modalRoot');
+  if(!root.innerHTML)return;
+  const ctx=modalCtx;modalCtx=null;
+  root.innerHTML='';document.body.style.overflow='';
+  if(ctx&&ctx.onClose)ctx.onClose();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function head(avHtml,title,sub){
+  return `<div class="sh-head">${avHtml||''}<div style="min-width:0"><h3>${title}</h3>${sub?`<p>${sub}</p>`:''}</div><button class="btn ghost icon x" data-close aria-label="ปิด">${ICON.x}</button></div>`;
+}
+function toast(msg,err){
+  const r=$('#toastRoot');r.innerHTML=`<div class="toast${err?' err':''}">${err?'⚠️':'✅'} <span>${esc(msg)}</span></div>`;
+  clearTimeout(toast._t);toast._t=setTimeout(()=>{r.innerHTML=''},2800);
+}
+function askConfirm(title,msg,okLabel='ยืนยัน',danger=true){
+  return new Promise(res=>{
+    let done=false;
+    openModal(`${head('',esc(title))}<div class="sh-body"><p style="margin:0 0 4px;color:var(--mute)">${msg}</p><div class="actions"><button class="btn" data-no>ยกเลิก</button><button class="btn ${danger?'danger':'primary'}" data-yes>${esc(okLabel)}</button></div></div>`,{onClose:()=>{if(!done)res(false)}});
+    $('#modalRoot [data-no]').onclick=()=>closeModal();
+    $('#modalRoot [data-yes]').onclick=()=>{done=true;closeModal(true);res(true)};
+  });
+}
+
+/* ---------------- signature pad ---------------- */
+function SigPad(canvas,onChange){
+  const ctx=canvas.getContext('2d');
+  let strokes=[],cur=null,w=0,h=0;
+  function size(){
+    const r=canvas.getBoundingClientRect();w=r.width;h=r.height;
+    const dpr=Math.max(1,window.devicePixelRatio||1);
+    canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);redraw();
+  }
+  function drawStroke(c,s,W,H,lw){
+    if(!s.length)return;
+    c.lineCap='round';c.lineJoin='round';c.strokeStyle='#3b2f7a';c.lineWidth=lw;
+    c.beginPath();
+    if(s.length===1){c.arc(s[0][0]*W,s[0][1]*H,lw/2,0,7);c.fillStyle='#3b2f7a';c.fill();return}
+    c.moveTo(s[0][0]*W,s[0][1]*H);
+    for(let i=1;i<s.length-1;i++){const mx=(s[i][0]+s[i+1][0])/2*W,my=(s[i][1]+s[i+1][1])/2*H;c.quadraticCurveTo(s[i][0]*W,s[i][1]*H,mx,my)}
+    const l=s[s.length-1];c.lineTo(l[0]*W,l[1]*H);c.stroke();
+  }
+  function redraw(){ctx.clearRect(0,0,w,h);strokes.forEach(s=>drawStroke(ctx,s,w,h,2.8))}
+  const pt=e=>{const r=canvas.getBoundingClientRect();return[(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height]};
+  canvas.addEventListener('pointerdown',e=>{e.preventDefault();try{canvas.setPointerCapture(e.pointerId)}catch(_){}cur=[pt(e)];strokes.push(cur);redraw();onChange(true)});
+  canvas.addEventListener('pointermove',e=>{if(!cur)return;e.preventDefault();const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];evs.forEach(ev=>cur.push(pt(ev)));redraw()});
+  const end=()=>{cur=null};
+  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('pointerleave',end);
+  const ro=new ResizeObserver(size);ro.observe(canvas);
+  size();
+  return{
+    clear(){strokes=[];redraw();onChange(false)},
+    empty:()=>!strokes.some(s=>s.length>1)&&strokes.length<2,
+    toDataURL(){
+      const W=560,H=Math.round(560*(h/w||0.4));
+      const o=document.createElement('canvas');o.width=W;o.height=H;const c=o.getContext('2d');
+      c.fillStyle='#fff';c.fillRect(0,0,W,H);
+      strokes.forEach(s=>drawStroke(c,s,W,H,3.6));
+      let u=o.toDataURL('image/webp',0.7);
+      if(!u.startsWith('data:image/webp'))u=o.toDataURL('image/png');
+      return u;
+    },
+    destroy(){ro.disconnect()}
+  };
+}
+
+/* ---------------- check-in flow ---------------- */
+function openCard(id){
+  const s=state.students.find(x=>x.id===id);if(!s)return;
+  if(state.checkins[id])return openDetail(s);
+  if(!canCheckIn()){
+    toast(!state.canWrite?(state.readOnlyReason||'บัญชีนี้ยังไม่มีสิทธิ์เช็คชื่อ'):'เช็คชื่อได้เฉพาะวันนี้เท่านั้น',true);return;
+  }
+  openSign(s);
+}
+let pad=null;
+function openSign(s){
+  const today=isToday();
+  const timeBlock=today
+    ?`<div class="timebox"><div><div class="lb">เวลาเช็คอิน</div><div class="tt" id="liveT">${fmtHMS.format(Date.now())}</div></div><div style="margin-left:auto">${lateChip(Date.now(),'liveHint')}</div></div>`
+    :`<div class="timebox"><div style="flex:1"><div class="lb">เช็คชื่อย้อนหลัง ${esc(fmtThai.format(keyDate(state.date)))} — ระบุเวลาที่มา</div><input id="manualT" type="time" value="${esc(state.config.startTime)}" class="date" style="margin-top:6px;width:100%"></div></div>`;
+  openModal(`${head(avatar(s.name,true),esc(s.name),[s.code?'รหัส '+esc(s.code):'',s.nickname?'('+esc(s.nickname)+')':'',s.org?esc(s.org):''].filter(Boolean).join(' · ')||'ผู้เข้าเรียน')}
+    <div class="sh-body">
+      ${timeBlock}
+      <div class="lbl">ลงลายมือชื่อ <small>ใช้นิ้ว ปากกา หรือเมาส์</small></div>
+      <div class="padwrap"><canvas id="pad"></canvas><div class="base"></div><div class="ph" id="ph">${ICON.pen} เซ็นชื่อที่นี่</div></div>
+      <div class="actions">
+        <button class="btn" id="bClear">ล้าง</button>
+        <button class="btn primary" id="bApprove" disabled>${ICON.check} ยืนยันเข้าเรียน (Approve)</button>
+      </div>
+      ${state.isAdmin?`<div style="text-align:center;margin-top:14px"><button class="btn ghost sm" id="bDelStu" style="color:var(--red)">ลบรายชื่อนี้ออกจากคลาส</button></div>`:''}
+    </div>`,{onClose:()=>{if(pad){pad.destroy();pad=null}}});
+  modalCtx.studentId=s.id;modalCtx.kind='sign';
+  const ap=$('#bApprove'),ph=$('#ph');
+  pad=SigPad($('#pad'),has=>{ap.disabled=!has;ph.style.opacity=has?0:1});
+  $('#bClear').onclick=()=>pad.clear();
+  ap.onclick=()=>approve(s,ap);
+  const ds=document.getElementById('bDelStu');if(ds)ds.onclick=()=>deleteStudent(s);
+}
+async function approve(s,btn){
+  if(pad.empty()){toast('กรุณาเซ็นชื่อก่อนกดยืนยัน',true);return}
+  if(state.checkins[s.id]){toast('รายชื่อนี้เช็คชื่อไปแล้ว',true);closeModal();return}
+  let time=Date.now();
+  if(!isToday()){
+    const v=($('#manualT')||{}).value||state.config.startTime;
+    time=Date.parse(`${state.date}T${v}:00+07:00`);
+  }
+  const date=state.date;
+  const li0=lateInfo(time);
+  const rec={studentId:s.id,name:s.name,code:s.code||'',org:s.org||'',time,timeText:hm(time),status:li0.late?'มาสาย':'มาเรียน',lateMinutes:li0.late?li0.mins:0,sig:pad.toDataURL(),by:state.myId||null,createdAt:Date.now()};
+  btn.disabled=true;btn.innerHTML='กำลังบันทึก…';if(modalCtx)modalCtx.saving=true;
+  try{
+    await withRetry(()=>store.putCheckin(date,s.id,rec));
+    showSuccess(s,rec);
+  }catch(e){console.warn(e);if(modalCtx)modalCtx.saving=false;toast(errMsg(e),true);btn.disabled=false;btn.innerHTML=ICON.check+' ยืนยันเข้าเรียน (Approve)'}
+}
+function showSuccess(s,rec){
+  const li=lateInfo(rec.time);
+  openModal(`<div class="success">
+    ${document.querySelector('.mascot').outerHTML.replace(/id="m(cape|body)"/g,'id="s$1"').replace(/url\(#m(cape|body)\)/g,'url(#s$1)')}
+    <h3>เช็คชื่อเรียบร้อย!</h3>
+    <p><b style="color:var(--ink)">${esc(s.name)}</b></p>
+    <p>บันทึกเวลา <b style="color:var(--g700);font-size:18px">${hm(rec.time)} น.</b> ${li.late?`· <span class="chip late">สาย ${li.mins} นาที</span>`:'· <span class="chip ok">ตรงเวลา</span>'}</p>
+    <div style="margin-top:18px"><button class="btn primary" data-close style="min-width:180px">เสร็จสิ้น</button></div>
+  </div>`);
+  clearTimeout(showSuccess._t);showSuccess._t=setTimeout(()=>{if($('#modalRoot .success'))closeModal()},4000);
+}
+function openDetail(s){
+  const c=state.checkins[s.id];if(!c)return;
+  openModal(`${head(avatar(s.name,true),esc(s.name),[s.code?'รหัส '+esc(s.code):'',s.org?esc(s.org):''].filter(Boolean).join(' · '))}
+    <div class="sh-body">
+      <dl class="kv"><dt>วันที่</dt><dd>${esc(fmtThai.format(keyDate(state.date)))}</dd><dt>เวลาที่มา</dt><dd>${hm(c.time)} น. &nbsp;${lateChip(c.time)}</dd></dl>
+      ${c.sig?`<div class="lbl" style="margin-top:4px">ลายมือชื่อ</div><img class="sigbig" alt="ลายเซ็น" src="${esc(c.sig)}">`:''}
+      <div class="actions">
+        ${state.isAdmin?`<button class="btn danger" id="bUndo">ยกเลิกการเช็คชื่อ</button>`:''}
+        <button class="btn primary" data-close>ปิด</button>
+      </div>
+      ${state.isAdmin?`<div style="text-align:center;margin-top:12px"><button class="btn ghost sm" id="bDelStu" style="color:var(--red)">ลบรายชื่อนี้ออกจากคลาส</button></div>`:''}
+    </div>`);
+  modalCtx.studentId=s.id;modalCtx.kind='detail';
+  const u=document.getElementById('bUndo');
+  if(u)u.onclick=async()=>{
+    if(!await askConfirm('ยกเลิกการเช็คชื่อ?',`ลบเวลาและลายเซ็นของ <b>${esc(s.name)}</b> ในวันนี้`,'ยกเลิกการเช็คชื่อ'))return;
+    try{await withRetry(()=>store.delCheckin(state.date,s.id));toast('ยกเลิกการเช็คชื่อแล้ว')}catch(e){toast(errMsg(e),true)}
+  };
+  const ds=document.getElementById('bDelStu');if(ds)ds.onclick=()=>deleteStudent(s);
+}
+async function deleteStudent(s){
+  if(!await askConfirm('ลบรายชื่อนี้?',`<b>${esc(s.name)}</b> จะถูกลบออกจากรายชื่อ (ประวัติการเช็คชื่อเดิมยังเก็บไว้)`,'ลบรายชื่อ'))return;
+  try{await withRetry(()=>store.delStudent(s.id));toast('ลบรายชื่อแล้ว')}catch(e){toast(errMsg(e),true)}
+}
+function refreshOpenModal(){
+  if(!modalCtx||!modalCtx.studentId)return;
+  if(modalCtx.kind==='sign'&&!modalCtx.saving&&state.checkins[modalCtx.studentId]&&!$('#modalRoot .success')){
+    const s=state.students.find(x=>x.id===modalCtx.studentId);
+    if(s){toast('รายชื่อนี้ถูกเช็คชื่อจากอีกเครื่องแล้ว');openDetail(s)}
+  }
+}
+
+/* ---------------- import ---------------- */
+function parseCSV(text){
+  const first=(text.split(/\r?\n/).find(l=>l.trim())||'');
+  const d=[',','\t',';'].map(c=>[c,first.split(c).length]).sort((a,b)=>b[1]-a[1])[0][0];
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;
+    else if(c===d){row.push(f);f=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f=''}
+    else f+=c;
+  }
+  if(f!==''||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+async function readFileRows(file){
+  const n=file.name.toLowerCase();
+  const buf=await file.arrayBuffer();
+  if(/\.(xlsx|xlsm|xls|ods)$/.test(n)){
+    for(let i=0;i<30&&!window.XLSX;i++)await new Promise(r=>setTimeout(r,200));
+    if(!window.XLSX)throw new Error('โหลดตัวอ่าน Excel ไม่สำเร็จ ลองบันทึกเป็น CSV แล้วนำเข้าอีกครั้ง');
+    const wb=XLSX.read(buf,{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    return XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});
+  }
+  let text=new TextDecoder('utf-8').decode(buf);
+  if(text.includes(String.fromCharCode(0xFFFD))){try{text=new TextDecoder('windows-874').decode(buf)}catch(e){}}
+  return parseCSV(text.replace(/^﻿/,''));
+}
+function rowsToStudents(rows){
+  rows=(rows||[]).map(r=>(r||[]).map(c=>String(c??'').trim())).filter(r=>r.some(Boolean));
+  if(!rows.length)return[];
+  const h=rows[0].map(c=>c.toLowerCase());
+  const idx=(re,skip=[])=>h.findIndex((c,i)=>!skip.includes(i)&&re.test(c));
+  const iNick=idx(/ชื่อเล่น|nick/);
+  const iFull=idx(/ชื่อ\s*[-–_/]?\s*(นาม)?สกุล|full\s*name|^name$|^ชื่อผู้เรียน|^ชื่อนักเรียน|^ชื่อนักศึกษา/,[iNick]);
+  const iFirst=idx(/^ชื่อ(จริง)?$|first/,[iNick,iFull]);
+  const iLast=idx(/^(นาม)?สกุล$|last|surname/,[iFull]);
+  const iCode=idx(/รหัส|^id$|code|student\s*id|เลขประจำตัว/);
+  const iTitle=idx(/คำนำหน้า|prefix|^title$/);
+  const iEmail=idx(/อีเมล|e-?mail/);
+  const iOrg=idx(/บริษัท|หน่วยงาน|company|organi[sz]ation|^org/);
+  const extra=h.map((c,i)=>i!==iFull&&/^ชื่อ\s*[-–]?\s*(นาม)?สกุล\s*\(?\s*(คนที่\s*)?[2-9]\)?$/.test(c)?i:-1).filter(i=>i>=0);
+  const hasHeader=[iFull,iFirst,iLast,iCode].some(i=>i>=0);
+  const body=hasHeader?rows.slice(1):rows;
+  const out=[],seen=new Set();
+  const PFX=/^(นาย|นางสาว|นาง|น\.ส\.|ด\.ช\.|ด\.ญ\.|ดร\.|mr\.?|mrs\.?|ms\.?|miss)\s*/i;
+  const push=s=>{
+    s.name=s.name.replace(/\s+/g,' ').trim().replace(PFX,'').trim();
+    if(!s.name)return;
+    s.id=studentId(s);
+    const k=s.code?'c'+s.code:'n'+s.name.replace(/\s/g,'');
+    if(seen.has(s.id)||seen.has(k))return;seen.add(s.id);seen.add(k);
+    out.push(s);
+  };
+  for(const r of body){
+    const org=iOrg>=0?(r[iOrg]||''):'';
+    let code='',name='';
+    if(hasHeader){
+      code=iCode>=0?(r[iCode]||''):'';
+      if(iFull>=0)name=r[iFull]||'';
+      else name=[iTitle>=0?r[iTitle]:'',iFirst>=0?r[iFirst]:'',iLast>=0?r[iLast]:''].filter(Boolean).join(' ');
+      if(!name&&iFull<0&&iFirst<0&&iLast<0)name=r.filter((c,i)=>i!==iCode&&i!==iNick&&i!==iEmail&&c).join(' ');
+    }else if(r.length>1&&/\d/.test(r[0])&&r[0].length<=20){code=r[0];name=r.slice(1).filter(Boolean).join(' ')}
+    else name=r.filter(Boolean).join(' ');
+    const main={code:code.trim(),name,nickname:iNick>=0?(r[iNick]||''):'',email:iEmail>=0?(r[iEmail]||''):'',org};
+    push(main);
+    extra.forEach(i=>{if(r[i])push({code:'',name:r[i],nickname:'',email:'',org})});
+  }
+  return out;
+}
+function studentId(s){
+  if(s.code)return /^[A-Za-z0-9_.-]{1,60}$/.test(s.code)?'c-'+s.code:'c-'+hash(s.code);
+  return 'n-'+hash(s.name);
+}
+let pending=[];
+function openImport(){
+  pending=[];
+  openModal(`${head('','นำเข้ารายชื่อผู้เข้าเรียน','รองรับไฟล์ CSV และ Excel (.xlsx / .xls)')}
+    <div class="sh-body">
+      <label class="drop" id="drop">${ICON.upload}<b>แตะเพื่อเลือกไฟล์ หรือลากไฟล์มาวาง</b><small>.csv · .xlsx · .xls</small><input id="file" type="file" accept=".csv,.txt,.xlsx,.xls,.xlsm,.ods,text/csv" class="hide"></label>
+      <div class="hint">ไฟล์ควรมีหัวคอลัมน์ เช่น <code>รหัส</code> <code>ชื่อ-นามสกุล</code> <code>ชื่อเล่น</code> (หรือ <code>ชื่อ</code> + <code>นามสกุล</code>) · นำเข้าซ้ำได้ รหัสเดิมจะอัปเดตแทนการเพิ่มซ้ำ · <a href="#" id="tpl" style="color:var(--g700);font-weight:600">ดาวน์โหลดไฟล์ตัวอย่าง</a></div>
+      <div id="prev"></div>
+      <div class="divider">หรือวางรายชื่อ (1 บรรทัด = 1 คน)</div>
+      <div class="field"><textarea id="paste" rows="4" placeholder="6601, สมชาย ใจดี&#10;6602, สมหญิง รักเรียน"></textarea></div>
+      <button class="btn sm" id="bParse">ตรวจรายชื่อที่วาง</button>
+      <div class="divider">หรือเพิ่มทีละคน</div>
+      <div class="two"><div class="field"><label>รหัส</label><input id="nCode" placeholder="ไม่บังคับ"></div><div class="field"><label>ชื่อ-นามสกุล</label><input id="nName" placeholder="เช่น สมชาย ใจดี"></div></div>
+      <button class="btn" id="bAddOne" style="width:100%">+ เพิ่มรายชื่อ</button>
+    </div>`,{wide:true});
+  const drop=$('#drop'),file=$('#file');
+  file.onchange=()=>file.files[0]&&handleFile(file.files[0]);
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));
+  drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f)});
+  $('#tpl').onclick=e=>{e.preventDefault();saveFile('ตัวอย่างรายชื่อผู้เข้าเรียน.csv','﻿รหัส,ชื่อ-นามสกุล,ชื่อเล่น\n6601,สมชาย ใจดี,ชาย\n6602,สมหญิง รักเรียน,หญิง\n','text/csv')};
+  $('#bParse').onclick=()=>{const t=$('#paste').value;if(!t.trim()){toast('ยังไม่ได้วางรายชื่อ',true);return}showPreview(rowsToStudents(parseCSV(t)))};
+  $('#bAddOne').onclick=async()=>{
+    const name=$('#nName').value.trim().replace(/\s+/g,' '),code=$('#nCode').value.trim();
+    if(!name){toast('กรุณากรอกชื่อ',true);$('#nName').focus();return}
+    const s={code,name,nickname:'',email:''};s.id=studentId(s);
+    try{await writeStudents([s]);toast('เพิ่ม '+name+' แล้ว');$('#nName').value='';$('#nCode').value='';$('#nCode').focus()}catch(e){toast(errMsg(e),true)}
+  };
+}
+async function handleFile(f){
+  try{const rows=await readFileRows(f);showPreview(rowsToStudents(rows),f.name)}
+  catch(e){console.warn(e);toast(e.message||'อ่านไฟล์ไม่สำเร็จ',true)}
+}
+function showPreview(list,fname){
+  pending=list;
+  const P=$('#prev');
+  if(!list.length){P.innerHTML='<div class="banner warn" style="margin-top:14px">ไม่พบรายชื่อในข้อมูลนี้ — ตรวจว่ามีคอลัมน์ชื่อหรือไม่</div>';return}
+  const existing=new Set(state.students.map(s=>s.id));
+  const nNew=list.filter(s=>!existing.has(s.id)).length;
+  P.innerHTML=`<div class="prev"><table><thead><tr><th>#</th><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>ชื่อเล่น</th></tr></thead><tbody>${list.slice(0,100).map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.code)}</td><td>${esc(s.name)}${existing.has(s.id)?' <span class="chip wait">มีแล้ว</span>':''}</td><td>${esc(s.nickname)}</td></tr>`).join('')}</tbody></table></div>
+    ${list.length>100?`<div class="hint">แสดง 100 แถวแรก จากทั้งหมด ${list.length}</div>`:''}
+    <div class="actions"><button class="btn" id="bCancelPrev">ยกเลิก</button><button class="btn primary" id="bDoImport">${ICON.check} นำเข้า ${list.length} รายชื่อ${nNew!==list.length?` (ใหม่ ${nNew})`:''}</button></div>`;
+  $('#bCancelPrev').onclick=()=>{pending=[];P.innerHTML=''};
+  $('#bDoImport').onclick=async e=>{
+    const b=e.currentTarget;b.disabled=true;
+    try{
+      await writeStudents(pending,(d,t)=>{b.innerHTML=`กำลังนำเข้า ${d}/${t}…`});
+      toast(`นำเข้า ${pending.length} รายชื่อเรียบร้อย`);closeModal();
+    }catch(err){console.warn(err);toast(errMsg(err),true);b.disabled=false;b.innerHTML='ลองอีกครั้ง'}
+  };
+}
+async function writeStudents(list,progress){
+  const byId=Object.fromEntries(state.students.map(s=>[s.id,s]));
+  let maxOrder=state.students.reduce((m,s)=>Math.max(m,s.order||0),0);
+  const jobs=list.map(s=>{
+    const old=byId[s.id];
+    const doc={code:s.code||'',name:s.name,nickname:s.nickname||'',email:s.email||'',org:s.org||'',order:old&&old.order!=null?old.order:++maxOrder,updatedAt:Date.now()};
+    return()=>withRetry(()=>store.putStudent(s.id,doc));
+  });
+  maxOrder=state.students.reduce((m,s)=>Math.max(m,s.order||0),0);
+  if(store.putStudents){
+    const items=list.map(s=>{const old=byId[s.id];return{id:s.id,data:{code:s.code||'',name:s.name,nickname:s.nickname||'',email:s.email||'',org:s.org||'',order:old&&old.order!=null?old.order:++maxOrder,updatedAt:Date.now()}}});
+    for(let k=0;k<items.length;k+=100){await store.putStudents(items.slice(k,k+100));progress&&progress(Math.min(k+100,items.length),items.length)}
+    return;
+  }
+  let done=0,i=0;
+  const worker=async()=>{while(i<jobs.length){const j=jobs[i++];await j();done++;progress&&progress(done,jobs.length)}};
+  await Promise.all(Array.from({length:Math.min(4,jobs.length)},worker));
+}
+
+/* ---------------- export ---------------- */
+function exportRows(){
+  const head=['ลำดับ','รหัส','ชื่อ-นามสกุล','บริษัท/หน่วยงาน','วันที่','สถานะ','เวลาที่มา','สาย (นาที)'];
+  const rows=sorted().map((s,i)=>{
+    const c=state.checkins[s.id];
+    if(!c)return[i+1,s.code||'',s.name,s.org||'',state.date,'ยังไม่เช็คชื่อ','',''];
+    const li=lateInfo(c.time);
+    return[i+1,s.code||'',s.name,s.org||'',state.date,li.late?'มาสาย':'มาเรียน',hm(c.time),li.late?li.mins:0];
+  });
+  return[head,...rows];
+}
+const csvCell=v=>{v=String(v??'');return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+async function saveFile(filename,text,mime){
+  if(downloads){
+    try{await downloads.save({filename,data:text});return true}catch(e){
+      try{await downloads.save({filename,data:new Blob([text],{type:mime})});return true}catch(e2){console.warn(e2)}
+    }
+  }
+  if(state.mode==='local'){
+    try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:mime}));a.download=filename;document.body.appendChild(a);a.click();a.remove();return true}catch(e){}
+  }
+  const ok=await copyText(text);
+  toast(ok?'ดาวน์โหลดไม่ได้ในหน้านี้ — คัดลอกข้อมูลไว้ให้แล้ว นำไปวางได้เลย':'ดาวน์โหลดไม่สำเร็จ',!ok);
+  return false;
+}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true}catch(e){
+    try{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok}catch(_){return false}
+  }
+}
+function openExport(){
+  openModal(`${head('','ส่งออกข้อมูลการเช็คชื่อ',esc(fmtThai.format(keyDate(state.date))))}
+    <div class="sh-body">
+      <button class="opt" id="eCopy"><div class="oi">${ICON.sheet}</div><div><b>คัดลอกไปวางใน Google Sheets</b><small>กดแล้วไปที่ Google Sheet → คลิกช่อง A1 → วาง (Ctrl/⌘+V)</small></div></button>
+      <button class="opt" id="eCsv"><div class="oi">${ICON.file}</div><div><b>ดาวน์โหลดไฟล์ CSV</b><small>เปิดด้วย Excel หรือ Google Sheets (ไฟล์ → นำเข้า) ได้ ภาษาไทยไม่เพี้ยน</small></div></button>
+      <button class="opt" id="eAll"><div class="oi">${ICON.copy}</div><div><b>คัดลอกรายชื่อทั้งหมด</b><small>รหัส + ชื่อ สำหรับใช้ต่อที่อื่น</small></div></button>
+      <div class="hint">ข้อมูลทั้งหมดเก็บอยู่ในระบบของหน้านี้ จึงขอให้ Claude ดึงไปใส่ Google Sheet ให้อัตโนมัติได้เมื่อเชื่อมต่อ Google Sheets แล้ว</div>
+    </div>`);
+  $('#eCopy').onclick=async()=>{const t=exportRows().map(r=>r.map(v=>String(v).replace(/\t|\n/g,' ')).join('\t')).join('\n');toast(await copyText(t)?'คัดลอกแล้ว — ไปวางใน Google Sheets ได้เลย':'คัดลอกไม่สำเร็จ',false)};
+  $('#eCsv').onclick=async()=>{const t='﻿'+exportRows().map(r=>r.map(csvCell).join(',')).join('\r\n');if(await saveFile(`เช็คชื่อ-ClaudeAI-${state.date}.csv`,t,'text/csv'))toast('บันทึกไฟล์แล้ว')};
+  $('#eAll').onclick=async()=>{const t=['รหัส\tชื่อ-นามสกุล\tชื่อเล่น',...sorted().map(s=>[s.code||'',s.name,s.nickname||''].join('\t'))].join('\n');toast(await copyText(t)?'คัดลอกรายชื่อแล้ว':'คัดลอกไม่สำเร็จ')};
+}
+
+/* ---------------- settings ---------------- */
+function openSettings(){
+  openModal(`${head('','ตั้งค่าคลาส','ใช้คำนวณสถานะ “ตรงเวลา / มาสาย”')}
+    <div class="sh-body">
+      <div class="two">
+        <div class="field"><label>เวลาเริ่มเรียน</label><input id="sStart" type="time" value="${esc(state.config.startTime)}"></div>
+        <div class="field"><label>มาสายเมื่อเกิน (นาที)</label><input id="sGrace" type="number" min="0" max="240" inputmode="numeric" value="${esc(state.config.grace)}"></div>
+      </div>
+      <div class="actions"><button class="btn" data-close>ยกเลิก</button><button class="btn primary" id="sSave">บันทึก</button></div>
+      <div class="divider">จัดการข้อมูล</div>
+      <button class="btn danger" id="sClear" style="width:100%">ลบรายชื่อทั้งหมด (${state.students.length} คน)</button>
+    </div>`);
+  $('#sSave').onclick=async()=>{
+    const v={...state.config,startTime:$('#sStart').value||'09:00',grace:Math.max(0,Math.min(240,parseInt($('#sGrace').value,10)||0))};
+    try{await withRetry(()=>store.putConfig(v));toast('บันทึกการตั้งค่าแล้ว');closeModal()}catch(e){toast(errMsg(e),true)}
+  };
+  $('#sClear').onclick=async()=>{
+    if(!state.students.length){toast('ยังไม่มีรายชื่อ',true);return}
+    if(!await askConfirm('ลบรายชื่อทั้งหมด?',`รายชื่อ ${state.students.length} คนจะถูกลบ (ประวัติการเช็คชื่อยังอยู่) — ย้อนกลับไม่ได้`,'ลบทั้งหมด'))return;
+    try{for(const s of state.students.slice())await withRetry(()=>store.delStudent(s.id));toast('ลบรายชื่อทั้งหมดแล้ว')}catch(e){toast(errMsg(e),true)}
+  };
+}
+
+/* ---------------- events ---------------- */
+function thShort(k){return fmtThaiShort.format(keyDate(k))}
+function initVersion(){
+  $('#verPill').textContent='🏷️ v'+APP_VERSION;
+  $('#verFoot').textContent='เวอร์ชัน '+APP_VERSION+' · อัปเดต '+fmtThai.format(keyDate(APP_UPDATED)).replace(/^วัน\S+ที่ /,'');
+  const open=()=>openModal(`${head('','ประวัติการอัปเดต','ตอนนี้ใช้เวอร์ชัน '+esc(APP_VERSION))}<div class="sh-body"><ul class="cl">${CHANGELOG.map(c=>`<li class="${c.v===APP_VERSION?'now':''}"><div class="vh"><span class="vtag">v${esc(c.v)}</span><span class="vd">${esc(thShort(c.d))}</span>${c.v===APP_VERSION?'<span class="chip ok">เวอร์ชันปัจจุบัน</span>':''}</div><ul>${c.items.map(i=>`<li style="border:0;padding:0;background:none">${esc(i)}</li>`).join('')}</ul></li>`).join('')}</ul></div>`);
+  $('#verPill').onclick=open;$('#verFoot').onclick=open;
+}
+initVersion();
+function setDate(k){state.date=k;$('#date').value=k;subCheckins();render()}
+$('#list').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openCard(c.dataset.id)});
+$('#q').addEventListener('input',e=>{state.q=e.target.value;render()});
+$('#seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;state.filter=b.dataset.f;document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));render()});
+$('#date').addEventListener('change',e=>{if(e.target.value)setDate(e.target.value)});
+$('#bImport').onclick=openImport;
+$('#bLogin').onclick=()=>{
+  openModal(`${head('','เข้าสู่โหมดผู้สอน','ใช้รหัส ADMIN_PIN ที่ตั้งไว้ใน Google Apps Script')}<div class="sh-body"><div class="field"><label>รหัสผู้สอน</label><input id="pinIn" type="password" inputmode="numeric" autocomplete="current-password"></div><div class="actions"><button class="btn" data-close>ยกเลิก</button><button class="btn primary" id="pinOk">เข้าสู่ระบบ</button></div></div>`);
+  const go=async()=>{const p=$('#pinIn').value.trim();if(!p)return;
+    try{const j=await store.verify(p);if(j&&j.ok){try{sessionStorage.setItem('attn-pin',p)}catch(e){}state._pin=p;state.isAdmin=true;closeModal();render();toast('เข้าสู่โหมดผู้สอนแล้ว')}else toast('รหัสไม่ถูกต้อง',true)}catch(e){toast('เชื่อมต่อไม่ได้',true)}};
+  $('#pinOk').onclick=go;$('#pinIn').onkeydown=e=>{if(e.key==='Enter')go()};setTimeout(()=>$('#pinIn').focus(),50);
+};
+$('#bExport').onclick=openExport;
+$('#bSettings').onclick=openSettings;
+const tb=$('#toolbar');
+new IntersectionObserver(([en])=>tb.classList.toggle('stuck',en.intersectionRatio<1),{threshold:[1],rootMargin:'-1px 0px 0px 0px'}).observe(tb);
+
+init();
+})();
 </script>
 </body>
 </html>

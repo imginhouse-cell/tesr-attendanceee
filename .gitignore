@@ -1,0 +1,10 @@
+# ไฟล์รายชื่อจริงของผู้เรียน (ข้อมูลส่วนบุคคล) — ห้ามขึ้น GitHub
+roster/
+*.xlsx
+*.xls
+รายชื่อผู้เข้าเรียน*.csv
+# ระบบ
+.DS_Store
+Thumbs.db
+.clasp.json
+node_modules/
