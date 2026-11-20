@@ -29,7 +29,7 @@ tesr-attendanceee/
 1. เปิด Google Sheet ที่ใช้เก็บข้อมูล: [สำเนาของ บทที่ 6 · เฉลยสำหรับผู้สอน (ชีต + Apps Script)](https://docs.google.com/spreadsheets/d/1n9Tr5oyydEUM3tEOpJuJFrPFQ1Ka31T6dDMJ_qv9weY/edit) (ถ้าใช้ชีตอื่น ให้แก้ `SPREADSHEET_ID` ใน `Code.gs`)
 2. เมนู **ส่วนขยาย (Extensions) → Apps Script**
 3. ลบโค้ดเดิมในไฟล์ `Code.gs` แล้ววางโค้ดจาก [`apps-script/Code.gs`](apps-script/Code.gs)
-4. แก้บรรทัด `const ADMIN_PIN = '1234';` เป็น **รหัสผู้สอน** ของคุณ → กด 💾 บันทึก
+4. ตั้งรหัสผู้สอน: **⚙️ Project Settings → Script Properties → Add script property** ชื่อ `ADMIN_KEY` ใส่รหัสที่ต้องการ (ไม่ต้องแก้ในโค้ด)
 5. เลือกฟังก์ชัน **`setup`** ด้านบน แล้วกด **Run**
    ครั้งแรก Google จะขออนุญาต → เลือกบัญชี → *Advanced* → *Go to project* → *Allow*
    ระบบใช้แท็บที่มีอยู่ในชีต: `Roster` · `Attendance` · `Data` · `Settings` (ถ้าแท็บไหนหายไปจะสร้างให้ใหม่)

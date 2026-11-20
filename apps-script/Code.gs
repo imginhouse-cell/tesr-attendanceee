@@ -11,7 +11,9 @@
  *   Data       — บันทึกแบบอ่านง่าย: timestamp, name, note (มา / สาย)
  *   Settings   — title, start (เวลาเริ่มเรียน), grace (นาทีที่ยังไม่นับสาย)
  */
-const ADMIN_PIN = '1234';           // ← เปลี่ยนเป็นรหัสผู้สอนของคุณ (ใช้นำเข้า/ลบรายชื่อ, ยกเลิกเช็คชื่อ, ตั้งค่า)
+// รหัสผู้สอน: ตั้งที่ Project Settings (⚙️) › Script Properties › ADMIN_KEY (ไม่อยู่ในโค้ด จึงขึ้น GitHub ได้ปลอดภัย)
+// ถ้ายังไม่ได้ตั้ง จะใช้ค่า ADMIN_PIN ด้านล่างแทน (ปล่อยว่าง = ปิดโหมดผู้สอน)
+const ADMIN_PIN = '';
 const TIMEZONE  = 'Asia/Bangkok';
 const SPREADSHEET_ID = '1n9Tr5oyydEUM3tEOpJuJFrPFQ1Ka31T6dDMJ_qv9weY';
 const LOG_TIME_FORMAT = 'dd/MM/yyyy HH:mm';
@@ -172,7 +174,8 @@ function doPost(e) {
   lock.waitLock(20000);
   try {
     const b = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-    const isAdmin = String(b.pin || '') === String(ADMIN_PIN);
+    const key = adminKey_();
+    const isAdmin = !!key && String(b.pin || '') === key;
     const adminOnly = ['verify', 'putStudent', 'putStudents', 'delStudent', 'delCheckin', 'putConfig'];
     if (adminOnly.indexOf(b.action) >= 0 && !isAdmin) return json_({ ok: false, error: 'pin' });
 
@@ -227,6 +230,10 @@ function doPost(e) {
   } finally {
     lock.releaseLock();
   }
+}
+
+function adminKey_() {
+  return String(PropertiesService.getScriptProperties().getProperty('ADMIN_KEY') || ADMIN_PIN || '');
 }
 
 /** กด Run ฟังก์ชันนี้ครั้งแรกเพื่อตรวจแท็บและอนุญาตสิทธิ์ */
